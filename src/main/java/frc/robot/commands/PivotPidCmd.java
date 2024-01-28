@@ -7,36 +7,37 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.PivotSubsystem;
 
-public class ManualPivotCmd extends Command {
+public class PivotPidCmd extends Command {
+ 
+  private PivotSubsystem pivotSub;
+  private double setpoint; 
 
-  PivotSubsystem pivotSub;
-  double moveSpeed;
-
-  public ManualPivotCmd(PivotSubsystem pivotSubsystem, double speed){
-    pivotSubsystem = pivotSub;
-    moveSpeed = speed;
-
+  public PivotPidCmd(PivotSubsystem pivotSubs, double setpoint){
+    pivotSub = pivotSubs;
+    this.setpoint = setpoint;
     addRequirements(pivotSub);
   }
-
+   
   @Override
   public void initialize(){
-    pivotSub.disablePid();
-    pivotSub.setManualSpeed(moveSpeed);
+    pivotSub.init();
   }
 
   @Override
   public void execute(){
-
+    pivotSub.changeSetpoint(setpoint);
   }
 
   @Override
   public void end(boolean interrupted){
-    pivotSub.enablePid();
+    
   }
 
   @Override
-  public boolean isFinished(){
+  public boolean isFinished() {
+    if(pivotSub.atSetpoint()){
+      return true;
+    }
     return false;
   }
 }

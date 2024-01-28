@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 // hardstop at the start position
 // subwoofer position, amp position, feed position?
 
@@ -9,9 +5,11 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PivotConstants;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.math.controller.PIDController;
@@ -25,28 +23,43 @@ public class PivotSubsystem extends SubsystemBase {
   private PIDController pid;
   private double setpoint;
   private boolean pidOn;
+  private double setpointTolerance;
 
   private double manualSpeed;
-
+  private double maxPidSpeed;
 
   public PivotSubsystem(){
     pivotMotor = new CANSparkMax(PivotConstants.PIVOT_MOTOR_PORT, MotorType.kBrushless);
     limitSwitch = new DigitalInput(PivotConstants.PIVOT_LIMIT);
     encoder = pivotMotor.getEncoder();
     
-    pid = new PIDController(0, 0, 0);
+    pid = new PIDController(0.001, 0, 0);
     setpoint = 0;
+    setpointTolerance = 3;
 
     manualSpeed = 0;
+    maxPidSpeed = 0.5;
 
   }
 
+  public void init(){
+    pivotMotor.setIdleMode(IdleMode.kBrake);
+  }
+
+  //////////////////////
+  // ENCODER METHODS  //
+  //////////////////////
+
+  public double returnEncoder(){
+    return encoder.getPosition();
+  }
   ///////////////////
   //  PID METHODS //
   //////////////////
 
   public void enablePid(){
     pidOn = true;
+    changeSetpoint(returnEncoder());
   }
 
   public void disablePid(){
@@ -61,8 +74,19 @@ public class PivotSubsystem extends SubsystemBase {
   //  CHECK METHODS  //
   ////////////////////
 
-  public boolean limitSwitchPressed(){
+  public boolean topLimitSwitchPressed(){
     return limitSwitch.get();
+  }
+
+  public void stopMotor(){
+    pivotMotor.set(0);
+  }
+
+  public boolean atSetpoint(){ // fix this method
+    if(returnEncoder() > setpoint - setpointTolerance && returnEncoder() < setpoint + setpointTolerance){
+      return true;
+    }
+    return false;
   }
 
   /////////////////////////
@@ -81,8 +105,7 @@ public class PivotSubsystem extends SubsystemBase {
   public void setManualSpeed(double speed){
     manualSpeed = deadzone(speed);
   }
-
-      
+ 
   @Override
   public void periodic() {
   
@@ -94,13 +117,18 @@ public class PivotSubsystem extends SubsystemBase {
       pidSpeed = manualSpeed;
     }
 
-    
-
-    if(limitSwitchPressed() && pidSpeed > 0){
-
+    if(topLimitSwitchPressed() && pidSpeed > 0){
+      pidSpeed = 0;
     }
-
+    else if(pidSpeed > maxPidSpeed){
+      pidSpeed = maxPidSpeed;
+    }
+  
     pivotMotor.set(pidSpeed);
+
+    SmartDashboard.putBoolean("Pid On?", pidOn);
+    SmartDashboard.putNumber("Speed", pidSpeed);
+    SmartDashboard.putBoolean("Limit switch pressed?", topLimitSwitchPressed());
 
   }
 }
