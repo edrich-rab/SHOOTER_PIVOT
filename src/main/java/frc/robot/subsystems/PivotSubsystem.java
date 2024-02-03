@@ -39,12 +39,12 @@ public class PivotSubsystem extends SubsystemBase {
     limitSwitch = new DigitalInput(PivotConstants.PIVOT_LIMIT);
     encoder = pivotMotor.getEncoder();
     
-    pid = new PIDController(0.0001, 0, 0);
+    pid = new PIDController(0.01, 0, 0);
     setpoint = 0;
-    setpointTolerance = 3;
+    setpointTolerance = 2.5;
 
     manualSpeed = 0;
-    maxPidSpeed = 0.5;
+    maxPidSpeed = 0.2;
 
    // robotHeight = 1;
     //table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -66,13 +66,14 @@ public class PivotSubsystem extends SubsystemBase {
   public void resetEnc(){
     encoder.setPosition(0);
   }
+
   ///////////////////
   //  PID METHODS //
   //////////////////
 
   public void enablePid(){
     pidOn = true;
-    changeSetpoint(returnEncoder());
+    changeSetpoint(returnEncoder()); //???
   }
 
   public void disablePid(){
@@ -91,9 +92,6 @@ public class PivotSubsystem extends SubsystemBase {
     return limitSwitch.get();
   }
 
-  public void stopMotor(){
-    pivotMotor.set(0);
-  }
 
   public boolean atSetpoint(){ 
     double error1 = setpoint - returnEncoder();
@@ -103,6 +101,10 @@ public class PivotSubsystem extends SubsystemBase {
   /////////////////////////
   //  MOVEMENT METHODS   //
   ////////////////////////
+
+  public void stopMotor(){
+    pivotMotor.set(0);
+  }
 
   public double deadzone(double speed){
     if(speed < 0.1 && speed > -0.1 ){
@@ -123,11 +125,15 @@ public class PivotSubsystem extends SubsystemBase {
  
   @Override
   public void periodic() {
+
+    if(topLimitSwitchPressed()){
+      resetEnc();
+    }
   
     double pidSpeed = 0;
 
     if(pidOn){
-      pidSpeed = pid.calculate(setpoint, encoder.getPosition());
+      pidSpeed = -pid.calculate(setpoint, encoder.getPosition());
     }
     else{
       pidSpeed = manualSpeed;
@@ -139,6 +145,9 @@ public class PivotSubsystem extends SubsystemBase {
     }
     else if(pidSpeed > maxPidSpeed){
       pidSpeed = maxPidSpeed;
+    }
+    else if(pidSpeed < -maxPidSpeed){
+      pidSpeed = - maxPidSpeed;
     }
     
   

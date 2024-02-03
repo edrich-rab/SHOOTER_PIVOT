@@ -23,9 +23,9 @@ public final class Constants {
     public static final int PIVOT_LIMIT = 9;
     public static final int JOYSTICK_PORT = 0;
 
-    public static final double subWooferEnc = 10;
-    public static final double ampEnc = 10;
-    public static final double wingEnc = 10;
+    public static final double subWooferEnc = 20;
+    public static final double ampEnc = 40;
+    public static final double wingEnc = 55;
 
   }
 }
