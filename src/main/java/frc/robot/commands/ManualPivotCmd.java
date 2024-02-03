@@ -4,16 +4,18 @@
 
 package frc.robot.commands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.PivotSubsystem;
 
 public class ManualPivotCmd extends Command {
 
   PivotSubsystem pivotSub;
-  double moveSpeed;
+  DoubleSupplier moveSpeed;
 
-  public ManualPivotCmd(PivotSubsystem pivotSubsystem, double speed){
-    pivotSubsystem = pivotSub;
+  public ManualPivotCmd(PivotSubsystem pivotSubsystem, DoubleSupplier speed){
+    pivotSub = pivotSubsystem;
     moveSpeed = speed;
 
     addRequirements(pivotSub);
@@ -22,17 +24,16 @@ public class ManualPivotCmd extends Command {
   @Override
   public void initialize(){
     pivotSub.disablePid();
-    pivotSub.setManualSpeed(moveSpeed);
   }
 
   @Override
   public void execute(){
-
+    pivotSub.setManualSpeed(moveSpeed.getAsDouble());
   }
 
-  @Override
+  @Override 
   public void end(boolean interrupted){
-    pivotSub.enablePid();
+    
   }
 
   @Override

@@ -6,6 +6,9 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PivotConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -13,7 +16,6 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.math.controller.PIDController;
-
 
 public class PivotSubsystem extends SubsystemBase {
   private CANSparkMax pivotMotor;
@@ -28,18 +30,25 @@ public class PivotSubsystem extends SubsystemBase {
   private double manualSpeed;
   private double maxPidSpeed;
 
+ // private double robotHeight; // in feet
+  //private NetworkTable table;
+  //private NetworkTableEntry robotPos;
+
   public PivotSubsystem(){
     pivotMotor = new CANSparkMax(PivotConstants.PIVOT_MOTOR_PORT, MotorType.kBrushless);
     limitSwitch = new DigitalInput(PivotConstants.PIVOT_LIMIT);
     encoder = pivotMotor.getEncoder();
     
-    pid = new PIDController(0.001, 0, 0);
+    pid = new PIDController(0.0001, 0, 0);
     setpoint = 0;
     setpointTolerance = 3;
 
     manualSpeed = 0;
     maxPidSpeed = 0.5;
 
+   // robotHeight = 1;
+    //table = NetworkTableInstance.getDefault().getTable("limelight");
+    //robotPos = table.getEntry("");
   }
 
   public void init(){
@@ -52,6 +61,10 @@ public class PivotSubsystem extends SubsystemBase {
 
   public double returnEncoder(){
     return encoder.getPosition();
+  }
+
+  public void resetEnc(){
+    encoder.setPosition(0);
   }
   ///////////////////
   //  PID METHODS //
@@ -82,11 +95,9 @@ public class PivotSubsystem extends SubsystemBase {
     pivotMotor.set(0);
   }
 
-  public boolean atSetpoint(){ // fix this method
-    if(returnEncoder() > setpoint - setpointTolerance && returnEncoder() < setpoint + setpointTolerance){
-      return true;
-    }
-    return false;
+  public boolean atSetpoint(){ 
+    double error1 = setpoint - returnEncoder();
+    return Math.abs(error1) < setpointTolerance;
   }
 
   /////////////////////////
@@ -105,11 +116,16 @@ public class PivotSubsystem extends SubsystemBase {
   public void setManualSpeed(double speed){
     manualSpeed = deadzone(speed);
   }
+
+  public void adjustPidShoot(){
+   
+  }
  
   @Override
   public void periodic() {
   
     double pidSpeed = 0;
+
     if(pidOn){
       pidSpeed = pid.calculate(setpoint, encoder.getPosition());
     }
@@ -117,18 +133,21 @@ public class PivotSubsystem extends SubsystemBase {
       pidSpeed = manualSpeed;
     }
 
+    
     if(topLimitSwitchPressed() && pidSpeed > 0){
       pidSpeed = 0;
     }
     else if(pidSpeed > maxPidSpeed){
       pidSpeed = maxPidSpeed;
     }
+    
   
     pivotMotor.set(pidSpeed);
 
     SmartDashboard.putBoolean("Pid On?", pidOn);
     SmartDashboard.putNumber("Speed", pidSpeed);
     SmartDashboard.putBoolean("Limit switch pressed?", topLimitSwitchPressed());
+    SmartDashboard.putNumber("Encoder values", returnEncoder());
 
   }
 }

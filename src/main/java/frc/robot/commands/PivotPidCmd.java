@@ -4,23 +4,26 @@
 
 package frc.robot.commands;
 
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.PivotSubsystem;
 
 public class PivotPidCmd extends Command {
  
-  private PivotSubsystem pivotSub;
-  private double setpoint; 
+  PivotSubsystem pivotSub;
+  double setpoint; 
 
   public PivotPidCmd(PivotSubsystem pivotSubs, double setpoint){
     pivotSub = pivotSubs;
     this.setpoint = setpoint;
+
     addRequirements(pivotSub);
   }
    
   @Override
   public void initialize(){
     pivotSub.init();
+    pivotSub.enablePid();
   }
 
   @Override
@@ -30,7 +33,7 @@ public class PivotPidCmd extends Command {
 
   @Override
   public void end(boolean interrupted){
-    
+    pivotSub.disablePid();
   }
 
   @Override
