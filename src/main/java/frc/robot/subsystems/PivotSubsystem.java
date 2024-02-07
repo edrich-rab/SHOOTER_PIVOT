@@ -4,8 +4,10 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.LimelightHelpers;
 import frc.robot.Constants.PivotConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -16,6 +18,8 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.math.controller.PIDController;
+
+import edu.wpi.first.math.geometry.*;
 
 public class PivotSubsystem extends SubsystemBase {
   private CANSparkMax pivotMotor;
@@ -30,9 +34,12 @@ public class PivotSubsystem extends SubsystemBase {
   private double manualSpeed;
   private double maxPidSpeed;
 
- // private double robotHeight; // in feet
-  //private NetworkTable table;
-  //private NetworkTableEntry robotPos;
+  private NetworkTable limelight;
+  private NetworkTableEntry botpos;
+
+  private double[] botposeArray;
+
+  private double[] converted;
 
   public PivotSubsystem(){
     pivotMotor = new CANSparkMax(PivotConstants.PIVOT_MOTOR_PORT, MotorType.kBrushless);
@@ -46,9 +53,29 @@ public class PivotSubsystem extends SubsystemBase {
     manualSpeed = 0;
     maxPidSpeed = 0.2;
 
-   // robotHeight = 1;
-    //table = NetworkTableInstance.getDefault().getTable("limelight");
-    //robotPos = table.getEntry("");
+    limelight = null;
+    botpos = null;
+
+    botposeArray = NetworkTableInstance.getDefault().getTable("limelight").getEntry("targetpose_robotspace").getDoubleArray(new double [6]);
+    //converted = CoordinateSystem.convert(, )
+
+  }
+
+  private NetworkTable getLimelight(){
+    if(limelight == null){
+      limelight = NetworkTableInstance.getDefault().getTable("limelight");
+    }
+    return limelight;
+  }
+
+  private NetworkTableEntry getBotPosition(){
+    if(getLimelight() == null){
+      botpos = null;
+    }
+    else{
+      botpos = getLimelight().getEntry("targetPose_RobotSpace");
+    }
+    return botpos;
   }
 
   public void init(){
@@ -73,7 +100,7 @@ public class PivotSubsystem extends SubsystemBase {
 
   public void enablePid(){
     pidOn = true;
-    changeSetpoint(returnEncoder()); //???
+    changeSetpoint(returnEncoder()); 
   }
 
   public void disablePid(){
@@ -115,6 +142,10 @@ public class PivotSubsystem extends SubsystemBase {
     }
   }
 
+  public void autoShoot(){
+    
+  }
+
   public void setManualSpeed(double speed){
     manualSpeed = deadzone(speed);
   }
@@ -125,7 +156,6 @@ public class PivotSubsystem extends SubsystemBase {
  
   @Override
   public void periodic() {
-
     if(topLimitSwitchPressed()){
       resetEnc();
     }
@@ -157,6 +187,8 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Speed", pidSpeed);
     SmartDashboard.putBoolean("Limit switch pressed?", topLimitSwitchPressed());
     SmartDashboard.putNumber("Encoder values", returnEncoder());
+    
+    SmartDashboard.putNumberArray("botposeArray", botposeArray);
 
   }
 }
