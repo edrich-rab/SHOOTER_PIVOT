@@ -158,13 +158,13 @@ public class PivotSubsystem extends SubsystemBase {
     double targetOffsetAngle_Vertical = ty.getDouble(0.0);
 
     // how many degrees back is your limelight rotated from perfectly vertical?
-    double limelightMountAngleDegrees = 25.0; 
+    double limelightMountAngleDegrees = 25.0; //CHANGE THIS
 
     // distance from the center of the Limelight lens to the floor
-    double limelightLensHeightInches = 20.0; 
+    double limelightLensHeightInches = 20.0; //CHANGE THIS
 
     // distance from the target to the floor
-    double goalHeightInches = 60.0; 
+    double goalHeightInches = 60.0; //CHANGE THIS
 
     double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
     double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
