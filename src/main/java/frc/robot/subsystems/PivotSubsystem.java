@@ -57,7 +57,7 @@ public class PivotSubsystem extends SubsystemBase {
     botpos = null;
 
     botposeArray = NetworkTableInstance.getDefault().getTable("limelight").getEntry("targetpose_robotspace").getDoubleArray(new double [6]);
-    //converted = CoordinateSystem.convert(, )
+  
 
   }
 
@@ -68,18 +68,31 @@ public class PivotSubsystem extends SubsystemBase {
     return limelight;
   }
 
-  private NetworkTableEntry getBotPosition(){
+  private double getBotPosition(){
+    double distance;
+    /* 
     if(getLimelight() == null){
       botpos = null;
     }
     else{
       botpos = getLimelight().getEntry("targetPose_RobotSpace");
     }
-    return botpos;
+    return botpos; */
+    distance = LimelightHelpers.getBotPose3d_TargetSpace("limelight").toPose2d().getTranslation().getNorm();
+    return distance;
   }
 
   public void init(){
     pivotMotor.setIdleMode(IdleMode.kBrake);
+
+    /* get Pose3D 
+     * from the Pose3D object use .toPose2d() to get a Pose2D object 
+     * from the Pose2D object use .getTranslation() to get a Translation2d object 
+     * from Translation2d object use .getNorm() to get distance from limelight to april tag's position 
+     *    Pose3dObj.toPose2d().getTranslation().getNorm(); it will be a double representing that dist ^^
+     * if you want distance from robot to april tag, find out how to get a Pose3d object representing the robot on the field 
+     * MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW
+     */
   }
 
   //////////////////////
@@ -188,7 +201,7 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Limit switch pressed?", topLimitSwitchPressed());
     SmartDashboard.putNumber("Encoder values", returnEncoder());
     
-    SmartDashboard.putNumberArray("botposeArray", botposeArray);
+    SmartDashboard.putNumber("distance from limelight", getBotPosition());
 
   }
 }
