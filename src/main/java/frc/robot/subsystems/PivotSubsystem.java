@@ -35,11 +35,17 @@ public class PivotSubsystem extends SubsystemBase {
   private double maxPidSpeed;
 
   private NetworkTable limelight;
+  /* 
   private NetworkTableEntry botpos;
 
   private double[] botposeArray;
 
   private double[] converted;
+
+  private double height;
+  */
+
+  private double distance;
 
   public PivotSubsystem(){
     pivotMotor = new CANSparkMax(PivotConstants.PIVOT_MOTOR_PORT, MotorType.kBrushless);
@@ -54,11 +60,6 @@ public class PivotSubsystem extends SubsystemBase {
     maxPidSpeed = 0.2;
 
     limelight = null;
-    botpos = null;
-
-    botposeArray = NetworkTableInstance.getDefault().getTable("limelight").getEntry("targetpose_robotspace").getDoubleArray(new double [6]);
-  
-
   }
 
   private NetworkTable getLimelight(){
@@ -69,7 +70,6 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   private double getBotPosition(){
-    double distance;
     /* 
     if(getLimelight() == null){
       botpos = null;
@@ -78,7 +78,7 @@ public class PivotSubsystem extends SubsystemBase {
       botpos = getLimelight().getEntry("targetPose_RobotSpace");
     }
     return botpos; */
-    distance = LimelightHelpers.getBotPose3d_TargetSpace("limelight").toPose2d().getTranslation().getNorm();
+    distance = LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getTranslation().getNorm();
     return distance;
   }
 
@@ -155,14 +155,11 @@ public class PivotSubsystem extends SubsystemBase {
     }
   }
 
-  public void autoShoot(){
-    
-  }
-
   public void setManualSpeed(double speed){
     manualSpeed = deadzone(speed);
   }
 
+  // still testing
   public void adjustPidShoot(){
       
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -182,13 +179,12 @@ public class PivotSubsystem extends SubsystemBase {
     double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
     double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
   
-    
-
+  
     //calculate distance
-    double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+    //double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
 
     //TO DO Convert Distance to Angle
-    this.setpoint = 0; // THIS SHOULD BE that angle
+    //this.setpoint = 0; // THIS SHOULD BE that angle
   }
  
   @Override
