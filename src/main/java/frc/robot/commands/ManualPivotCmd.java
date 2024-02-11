@@ -27,8 +27,13 @@ public class ManualPivotCmd extends Command {
   }
 
   @Override
-  public void execute(){
+  public void execute(){ //CHANGE THIS PLS!!!!
+    if(moveSpeed.getAsDouble() > 0.4){
+      pivotSub.stopMotor();
+    }
+    else{  
     pivotSub.setManualSpeed(moveSpeed.getAsDouble());
+    }
   }
 
   @Override 

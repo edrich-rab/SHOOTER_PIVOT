@@ -35,17 +35,20 @@ public class PivotSubsystem extends SubsystemBase {
   private double maxPidSpeed;
 
   private NetworkTable limelight;
-  /* 
-  private NetworkTableEntry botpos;
-
-  private double[] botposeArray;
-
-  private double[] converted;
-
-  private double height;
-  */
-
+  
+  private double subwoofHeight;
   private double distance;
+
+  private double tixInOneRotation; 
+  private double tixInOneDeg;
+
+  private double limelightAngle;
+  private double aprilSubDis; //Distance between subwoofer opening & apriltag
+  private double beta; 
+  private double hypDist;
+  private double finalAngle;
+
+  // amount of ticks in one degree = 2.84 encoder tix
 
   public PivotSubsystem(){
     pivotMotor = new CANSparkMax(PivotConstants.PIVOT_MOTOR_PORT, MotorType.kBrushless);
@@ -54,45 +57,26 @@ public class PivotSubsystem extends SubsystemBase {
     
     pid = new PIDController(0.01, 0, 0);
     setpoint = 0;
-    setpointTolerance = 2.5;
+    setpointTolerance = 0.5;
 
     manualSpeed = 0;
-    maxPidSpeed = 0.2;
+    maxPidSpeed = 0.01;
 
     limelight = null;
-  }
+    subwoofHeight = 1.98; //height of subwoofer opening in meters
+    tixInOneRotation = 6; // or 4096
+    tixInOneDeg = tixInOneRotation/360;
 
-  private NetworkTable getLimelight(){
-    if(limelight == null){
-      limelight = NetworkTableInstance.getDefault().getTable("limelight");
-    }
-    return limelight;
-  }
+    limelightAngle = 10;
+    aprilSubDis = 0.43;
+    beta = 90 - limelightAngle;
+    hypDist = Math.pow(aprilSubDis, 2) + Math.pow(getDistanceFromTarget(), 2) - 2*(aprilSubDis* getDistanceFromTarget()* Math.cos(beta));
+    finalAngle = Math.asin(aprilSubDis*Math.sin(beta)/ hypDist);
 
-  private double getBotPosition(){
-    /* 
-    if(getLimelight() == null){
-      botpos = null;
-    }
-    else{
-      botpos = getLimelight().getEntry("targetPose_RobotSpace");
-    }
-    return botpos; */
-    distance = LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getTranslation().getNorm();
-    return distance;
   }
 
   public void init(){
     pivotMotor.setIdleMode(IdleMode.kBrake);
-
-    /* get Pose3D 
-     * from the Pose3D object use .toPose2d() to get a Pose2D object 
-     * from the Pose2D object use .getTranslation() to get a Translation2d object 
-     * from Translation2d object use .getNorm() to get distance from limelight to april tag's position 
-     *    Pose3dObj.toPose2d().getTranslation().getNorm(); it will be a double representing that dist ^^
-     * if you want distance from robot to april tag, find out how to get a Pose3d object representing the robot on the field 
-     * MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW MEOW
-     */
   }
 
   //////////////////////
@@ -132,7 +116,6 @@ public class PivotSubsystem extends SubsystemBase {
     return limitSwitch.get();
   }
 
-
   public boolean atSetpoint(){ 
     double error1 = setpoint - returnEncoder();
     return Math.abs(error1) < setpointTolerance;
@@ -147,7 +130,7 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double deadzone(double speed){
-    if(speed < 0.1 && speed > -0.1 ){
+    if(speed < 0.3 && speed > -0.3 ){
       return 0;
     }
     else{
@@ -159,32 +142,18 @@ public class PivotSubsystem extends SubsystemBase {
     manualSpeed = deadzone(speed);
   }
 
-  // still testing
-  public void adjustPidShoot(){
-      
-    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-    NetworkTableEntry ty = table.getEntry("ty");
+  /////////////////////////
+  //  LIMELIGHT METHODS  //
+  ////////////////////////
 
-    double targetOffsetAngle_Vertical = ty.getDouble(0.0);
+  private double getDistanceFromTarget(){ //find out if it is horizontal distance
+    distance = LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getTranslation().getNorm();
+    return distance;
+  }
 
-    // how many degrees back is your limelight rotated from perfectly vertical?
-    double limelightMountAngleDegrees = 25.0; //CHANGE THIS
-
-    // distance from the center of the Limelight lens to the floor
-    double limelightLensHeightInches = 20.0; //CHANGE THIS
-
-    // distance from the target to the floor
-    double goalHeightInches = 60.0; //CHANGE THIS
-
-    double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
-    double angleToGoalRadians = Math.toRadians(angleToGoalDegrees);
-  
-  
-    //calculate distance
-    //double distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
-
-    //TO DO Convert Distance to Angle
-    //this.setpoint = 0; // THIS SHOULD BE that angle
+  // returns the encoder count of the angle shooter should go to
+  public double angleSubwooferShot(){
+    return finalAngle * tixInOneDeg ;
   }
  
   @Override
@@ -213,7 +182,6 @@ public class PivotSubsystem extends SubsystemBase {
       pidSpeed = - maxPidSpeed;
     }
     
-  
     pivotMotor.set(pidSpeed);
 
     SmartDashboard.putBoolean("Pid On?", pidOn);
@@ -221,7 +189,7 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Limit switch pressed?", topLimitSwitchPressed());
     SmartDashboard.putNumber("Encoder values", returnEncoder());
     
-    SmartDashboard.putNumber("distance from limelight", getBotPosition());
+    SmartDashboard.putNumber("distance from limelight", getDistanceFromTarget());
 
   }
 }
