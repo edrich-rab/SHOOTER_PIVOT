@@ -1,3 +1,4 @@
+// make a command for each specific april tag and in each command, initialize to a specific pipeline that only detects certain april tags 
 package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
@@ -17,13 +18,15 @@ public class S_QuickTurnCommand extends CommandBase {
   PIDController anglePID; 
 
   DoubleSupplier xSupp, ySupp, zSupp; 
+  int pipeline;
 
-  public S_QuickTurnCommand(SwerveSubsystem swerveSubs, DoubleSupplier xSupp, DoubleSupplier ySupp, DoubleSupplier zSupp) {
+  public S_QuickTurnCommand(SwerveSubsystem swerveSubs, DoubleSupplier xSupp, DoubleSupplier ySupp, DoubleSupplier zSupp, int pipeline) {
     this.swerveSubs = swerveSubs; 
 
     this.xSupp = xSupp; 
     this.ySupp = ySupp; 
     this.zSupp = zSupp; 
+    this.pipeline = pipeline;
 
     anglePID = new PIDController(SwerveConstants.KP_ANGLE, SwerveConstants.KI_ANGLE, SwerveConstants.KD_ANGLE);
 
@@ -33,12 +36,14 @@ public class S_QuickTurnCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    LimelightHelpers.setPipelineIndex("limelight", pipeline);
     //swerveSubs.resetNavx();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    SmartDashboard.putNumber("pipeline", pipeline);
     SmartDashboard.putString("CURRENT CMD", getName());
     SwerveModuleState[] states; 
 
