@@ -25,7 +25,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private AHRS navx; 
 
   //desired id that we want
-  public double fiducialID; 
+  //public double fiducialID = LimelightHelpers.getFiducialID("limelight"); 
 
   private double resetCounts = 0; 
 
@@ -144,10 +144,6 @@ public class SwerveSubsystem extends SubsystemBase {
   }
   */
 
-  public void setDesiredFiducialID(double id){
-    fiducialID = id;
-    SmartDashboard.putNumber("Desired ID", id);
-  }
 
   //SET STATES 
   //gets a SwerveModuleStates array from driver control and sets each module 
@@ -249,7 +245,7 @@ public class SwerveSubsystem extends SubsystemBase {
     // backLeft.stop();
     // backRight.stop();
     // frontRight.stop();
-}
+  }
 
   @Override
   public void periodic() {
@@ -268,7 +264,7 @@ public class SwerveSubsystem extends SubsystemBase {
     // frontRight.print();
     // backRight.print();
     SmartDashboard.putNumber("NAVX", navx.getYaw());
-    SmartDashboard.putNumber("april tag", fiducialID);
+    //SmartDashboard.putNumber("april tag", fiducialID);
     SmartDashboard.putNumber("RESET COUNTS", resetCounts);
     
 

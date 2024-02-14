@@ -8,7 +8,9 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.commands.ManualPivotCmd;
 import frc.robot.commands.PivotPidCmd;
+import frc.robot.commands.S_QuickTurnCommand;
 import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -20,13 +22,14 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
   private final PivotSubsystem pivotSubs = new PivotSubsystem();
+  private final SwerveSubsystem swerveSubs = new SwerveSubsystem();
   //private final XboxController joystick = new XboxController(PivotConstants.JOYSTICK_PORT);
   private final Joystick joystick = new Joystick(PivotConstants.JOYSTICK_PORT);
 
   //private final PivotPidCmd pivotAmpShoot = new PivotPidCmd(pivotSubs, 40);
   //private final PivotPidCmd pivotSubShoot = new PivotPidCmd(pivotSubs, 80);
   //private final PivotPidCmd  pivotWingShoot = new PivotPidCmd(pivotSubs, 60);
-  private final PivotPidCmd autoSubwoofShoot = new PivotPidCmd(pivotSubs, pivotSubs.angleSubwooferShot());
+  //private final PivotPidCmd autoSubwoofShoot = new PivotPidCmd(pivotSubs, pivotSubs.angleSubwooferShot());
 
 
   public RobotContainer() {
@@ -38,9 +41,12 @@ public class RobotContainer {
  
   private void configureBindings(){
     //new JoystickButton(joystick, 2).onTrue(new PivotPidCmd(pivotSubs, 8));
+    /* 
     new JoystickButton(joystick, XboxController.Button.kX.value).onTrue(new PivotPidCmd(pivotSubs, PivotConstants.ampEnc));
     new JoystickButton(joystick, XboxController.Button.kA.value).onTrue(new PivotPidCmd(pivotSubs, PivotConstants.subWooferEnc));
     new JoystickButton(joystick, XboxController.Button.kB.value).onTrue(new PivotPidCmd(pivotSubs, PivotConstants.wingEnc));
+    */
+    new JoystickButton(joystick, 2).onTrue(new S_QuickTurnCommand(swerveSubs, () -> joystick.getRawAxis(0), () -> joystick.getRawAxis(1), () -> joystick.getRawAxis(2)));
     
   }
 

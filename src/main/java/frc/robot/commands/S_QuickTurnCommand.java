@@ -7,20 +7,19 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.subsystems.LimelightHelpers;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class S_QuickTurnCommand extends CommandBase {
 
   /* * * DECLARATION * * */
   SwerveSubsystem swerveSubs; 
-  double fiducialID; 
   PIDController anglePID; 
 
   DoubleSupplier xSupp, ySupp, zSupp; 
 
-  public S_QuickTurnCommand(SwerveSubsystem swerveSubs, DoubleSupplier xSupp, DoubleSupplier ySupp, DoubleSupplier zSupp, double desiredFiducialID) {
+  public S_QuickTurnCommand(SwerveSubsystem swerveSubs, DoubleSupplier xSupp, DoubleSupplier ySupp, DoubleSupplier zSupp) {
     this.swerveSubs = swerveSubs; 
-    this.fiducialID = desiredFiducialID; 
 
     this.xSupp = xSupp; 
     this.ySupp = ySupp; 
@@ -57,7 +56,9 @@ public class S_QuickTurnCommand extends CommandBase {
     zSpeed = modifyAxis(zSpeed); 
 
     
-    double rotationSpeed = anglePID.calculate(swerveSubs.fiducialID, swerveSubs.getRotation2d().getDegrees());
+    double rotationSpeed = anglePID.calculate(LimelightHelpers.getTX("limelight"), 0);
+    swerveSubs.drive(xSpeed, ySpeed, rotationSpeed, true);
+  
   }
 
   // Called once the command ends or is interrupted.
