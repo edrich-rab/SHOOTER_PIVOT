@@ -47,9 +47,9 @@ public class RobotContainer {
     new JoystickButton(joystick, XboxController.Button.kA.value).onTrue(new PivotPidCmd(pivotSubs, PivotConstants.subWooferEnc));
     new JoystickButton(joystick, XboxController.Button.kB.value).onTrue(new PivotPidCmd(pivotSubs, PivotConstants.wingEnc));
     */
-    new JoystickButton(joystick, 2).whileTrue(new S_QuickTurnCommand(swerveSubs, () -> joystick.getRawAxis(0), () -> joystick.getRawAxis(1), () -> joystick.getRawAxis(2), 0));
-    new JoystickButton(joystick,3).whileTrue(new S_QuickTurnCommand(swerveSubs, () -> joystick.getRawAxis(0), () -> joystick.getRawAxis(1), () -> joystick.getRawAxis(2), 1));
-    new JoystickButton(joystick, 4).whileTrue(new S_DriveCommand(swerveSubs, () -> joystick.getRawAxis(0), () -> joystick.getRawAxis(1), () -> joystick.getRawAxis(2) , 2.5));
+    new JoystickButton(joystick, 10).whileTrue(new S_QuickTurnCommand(swerveSubs, () -> joystick.getRawAxis(0), () -> joystick.getRawAxis(1), () -> joystick.getRawAxis(2), 0));
+   // new JoystickButton(joystick,10).whileTrue(new S_QuickTurnCommand(swerveSubs, () -> joystick.getRawAxis(0), () -> joystick.getRawAxis(1), () -> joystick.getRawAxis(2), 1));
+    new JoystickButton(joystick, 12).whileTrue(new S_DriveCommand(swerveSubs, () -> joystick.getRawAxis(0), () -> joystick.getRawAxis(1), () -> joystick.getRawAxis(2) , 1));
   }
 
   public Command getAutonomousCommand() {

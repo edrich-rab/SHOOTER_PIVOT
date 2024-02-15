@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.commands.S_DriveCommand;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -247,6 +248,12 @@ public class SwerveSubsystem extends SubsystemBase {
     // frontRight.stop();
   }
 
+  
+  public double getDistanceFromTarget(){ //find out if it is horizontal distance
+    double distance = LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getTranslation().getNorm();
+    return distance;
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
@@ -267,6 +274,5 @@ public class SwerveSubsystem extends SubsystemBase {
     //SmartDashboard.putNumber("april tag", fiducialID);
     SmartDashboard.putNumber("RESET COUNTS", resetCounts);
     
-
   }
 }

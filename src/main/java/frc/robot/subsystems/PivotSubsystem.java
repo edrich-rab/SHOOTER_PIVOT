@@ -70,8 +70,8 @@ public class PivotSubsystem extends SubsystemBase {
     limelightAngle = 10;
     aprilSubDis = 0.43;
     beta = 90 - limelightAngle;
-    hypDist = Math.pow(aprilSubDis, 2) + Math.pow(getDistanceFromTarget(), 2) - 2*(aprilSubDis* getDistanceFromTarget()* Math.cos(beta));
-    finalAngle = Math.asin(aprilSubDis*Math.sin(beta)/ hypDist);
+    //hypDist = Math.pow(aprilSubDis, 2) + Math.pow(getDistanceFromTarget(), 2) - 2*(aprilSubDis* getDistanceFromTarget()* Math.cos(beta));
+    //finalAngle = Math.asin(aprilSubDis*Math.sin(beta)/ hypDist);
 
   }
 
@@ -146,11 +146,6 @@ public class PivotSubsystem extends SubsystemBase {
   //  LIMELIGHT METHODS  //
   ////////////////////////
 
-  private double getDistanceFromTarget(){ //find out if it is horizontal distance
-    distance = LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getTranslation().getNorm();
-    return distance;
-  }
-
   // returns the encoder count of the angle shooter should go to
   public double angleSubwooferShot(){
     return finalAngle * tixInOneDeg ;
@@ -189,7 +184,7 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Limit switch pressed?", topLimitSwitchPressed());
     SmartDashboard.putNumber("Encoder values", returnEncoder());
     
-    SmartDashboard.putNumber("distance from limelight", getDistanceFromTarget());
+    //SmartDashboard.putNumber("distance from limelight", getDistanceFromTarget());
 
   }
 }

@@ -10,7 +10,7 @@ public final class Constants {
   }
 
   public static class PivotConstants{
-    public static final int PIVOT_MOTOR_PORT = 23;
+    public static final int PIVOT_MOTOR_PORT = 15;
     public static final int PIVOT_LIMIT = 9;
     public static final int JOYSTICK_PORT = 0;
 
@@ -132,6 +132,10 @@ public final class Constants {
     public static final double KP_ANGLE = 0.011; 
     public static final double KI_ANGLE = 0.000; 
     public static final double KD_ANGLE = 0.0015; 
+
+    public static final double KP_DRIVE = 0.023;
+    public static final double KI_DRIVE = 0.00;
+    public static final double KD_DRIVE = 0.00;
 
 
     //FIXME speeds 

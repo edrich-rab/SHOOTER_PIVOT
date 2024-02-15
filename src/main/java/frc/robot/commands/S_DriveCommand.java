@@ -61,9 +61,11 @@ public class S_DriveCommand extends CommandBase {
     ySpeed = modifyAxis(ySpeed); 
     zSpeed = modifyAxis(zSpeed); 
 
-    double forwardDriveSpeed = drivePid.calculate(pivotSubs.getDistanceFromTarget(), idealDist);
+    double forwardDriveSpeed = drivePid.calculate(swerveSubs.getDistanceFromTarget(), idealDist);
 
-    swerveSubs.drive(xSpeed, forwardDriveSpeed, zSpeed, true);
+    swerveSubs.drive(xSpeed, -forwardDriveSpeed, zSpeed, true);
+    SmartDashboard.putNumber("pid output speed", forwardDriveSpeed);
+
   }
 
   // Called once the command ends or is interrupted.
@@ -81,7 +83,7 @@ public class S_DriveCommand extends CommandBase {
 
   /* * * ADDED METHODS * * */
   public double deadzone(double num){
-    return Math.abs(num) > 0.1 ? num : 0;
+    return Math.abs(num) > 0.2 ? num : 0;
   }
 
   private static double modifyAxis(double num) {
