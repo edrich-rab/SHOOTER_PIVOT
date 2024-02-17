@@ -9,7 +9,6 @@ import frc.robot.Constants.PivotConstants;
 import frc.robot.commands.ManualPivotCmd;
 import frc.robot.commands.PivotPidCmd;
 import frc.robot.commands.LimelightDriveAlignCmd;
-//import frc.robot.commands.S_QuickTurnCommand;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,7 +35,7 @@ public class RobotContainer {
 
   public RobotContainer() {
     //pivotSubs.setDefaultCommand(new ManualPivotCmd(pivotSubs, () -> joystick.getLeftY()));
-    pivotSubs.setDefaultCommand(new ManualPivotCmd(pivotSubs, () -> joystick.getRawAxis(1)));
+    //pivotSubs.setDefaultCommand(new ManualPivotCmd(pivotSubs, () -> joystick.getRawAxis(1)));
     configureBindings();
   }
 
@@ -56,7 +55,7 @@ public class RobotContainer {
     new JoystickButton(joystick, 12).whileTrue(new S_DriveCommand(swerveSubs, () -> joystick.getRawAxis(0), () -> joystick.getRawAxis(1), () -> joystick.getRawAxis(2) , 1));
     */
 
-   
+    new JoystickButton(joystick, 10).whileTrue(new LimelightDriveAlignCmd(swerveSubs, 0.5));
   }
 
   public Command getAutonomousCommand() {
