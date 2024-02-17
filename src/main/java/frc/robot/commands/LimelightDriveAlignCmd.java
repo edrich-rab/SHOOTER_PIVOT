@@ -11,12 +11,13 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.subsystems.LimelightHelpers;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class LimelightDriveAlignCmd extends Command {
   private SwerveSubsystem swerveSubs; 
-  private PivotSubsystem pivotSubs;
+  //private PivotSubsystem pivotSubs;
   PIDController drivePid;
   Optional<Alliance> ally;
 
@@ -36,7 +37,7 @@ public class LimelightDriveAlignCmd extends Command {
     ally = DriverStation.getAlliance();
 
     //FIXME tune the pid!!!!!
-    drivePid = new PIDController(0.001, 0, 0);
+    drivePid = new PIDController(0.05, 0, 0);
 
     addRequirements(swerveSubs);
   }
@@ -50,6 +51,7 @@ public class LimelightDriveAlignCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    System.out.println("running command");
     SmartDashboard.putString("DONE", "not done");
     SwerveModuleState[] states; 
     /* * * ALTERING VALUES * * */
@@ -76,8 +78,15 @@ public class LimelightDriveAlignCmd extends Command {
     states = SwerveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
       ChassisSpeeds.fromFieldRelativeSpeeds(0, forwardDriveSpeed, 0, swerveSubs.getRotation2d())
     );
+
+    if(LimelightHelpers.getTV("limelight")){
+      swerveSubs.setModuleStates(states);
+    }
+    else{
+      swerveSubs.stopModules();
+    }
     
-    swerveSubs.setModuleStates(states);
+    SmartDashboard.putNumber("drive speed", forwardDriveSpeed);
   }
 
   // Called once the command ends or is interrupted.

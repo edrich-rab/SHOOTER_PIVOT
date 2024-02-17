@@ -55,7 +55,8 @@ public class RobotContainer {
     new JoystickButton(joystick, 12).whileTrue(new S_DriveCommand(swerveSubs, () -> joystick.getRawAxis(0), () -> joystick.getRawAxis(1), () -> joystick.getRawAxis(2) , 1));
     */
 
-    new JoystickButton(joystick, 10).whileTrue(new LimelightDriveAlignCmd(swerveSubs, 0.5));
+    new JoystickButton(joystick,12 ).whileTrue(new LimelightDriveAlignCmd(swerveSubs, 1));
+    //new JoystickButton(joystick, 10).whileTrue(new PivotPidCmd(pivotSubs, 30));
   }
 
   public Command getAutonomousCommand() {
