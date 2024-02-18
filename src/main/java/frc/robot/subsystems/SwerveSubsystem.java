@@ -41,6 +41,8 @@ public class SwerveSubsystem extends SubsystemBase {
       new SwerveModule(3, SwerveConstants.BackRight.constants)
     };
 
+
+
     //instantiate navx 
     navx = new AHRS();
     navx.zeroYaw();
@@ -99,6 +101,21 @@ public class SwerveSubsystem extends SubsystemBase {
     setModuleStates(state);
   }
 
+  public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldOriented) { //for non field oriented drive
+    SwerveModuleState[] swerveModuleStates; 
+
+    if (fieldOriented) {
+      swerveModuleStates = SwerveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
+        ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotationSpeed, getRotation2d())
+      );
+    } else {
+      swerveModuleStates = SwerveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
+        new ChassisSpeeds(xSpeed, ySpeed, rotationSpeed)
+      );
+    }
+
+    setModuleStates(swerveModuleStates);
+  }
   /* * * STATES * * */
 
   //SET STATES 

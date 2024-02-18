@@ -8,6 +8,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.commands.ManualPivotCmd;
 import frc.robot.commands.PivotPidCmd;
+import frc.robot.commands.setHeading;
 import frc.robot.commands.LimelightDriveAlignCmd;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -57,6 +58,7 @@ public class RobotContainer {
 
     new JoystickButton(joystick,12 ).whileTrue(new LimelightDriveAlignCmd(swerveSubs, 1));
     //new JoystickButton(joystick, 10).whileTrue(new PivotPidCmd(pivotSubs, 30));
+    new JoystickButton(joystick, 11).whileTrue(new setHeading(swerveSubs, 90));
   }
 
   public Command getAutonomousCommand() {

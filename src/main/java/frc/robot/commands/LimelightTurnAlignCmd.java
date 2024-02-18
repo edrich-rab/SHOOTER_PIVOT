@@ -76,8 +76,11 @@ public class LimelightTurnAlignCmd extends Command {
       new ChassisSpeeds(rotationSpeed, ySpeed, zSpeed)
       );
     }
+
+    if(LimelightHelpers.getTV("limelight")){
+      swerveSubs.setModuleStates(states);
+    }
     
-    swerveSubs.setModuleStates(states);
   }
 
   // Called once the command ends or is interrupted.

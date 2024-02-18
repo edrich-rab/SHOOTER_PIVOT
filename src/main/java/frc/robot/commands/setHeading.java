@@ -7,6 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.LimelightHelpers;
@@ -17,11 +18,14 @@ public class setHeading extends Command {
   private double heading;
   private PIDController pid;
 
+  //Drives towards heading that you set in field oriented mode
   public setHeading(SwerveSubsystem swerveSubsystem, double heading) {
     swerveSubs = swerveSubsystem;
     this.heading = heading;
 
-    pid = new PIDController(0.05, 0, 0);
+    //code it so that output of pid is from -1 to 1 
+    // increase kP value
+    pid = new PIDController(0.07, 0, 0);
     addRequirements(swerveSubs);
   }
   @Override
@@ -31,20 +35,28 @@ public class setHeading extends Command {
 
   @Override
   public void execute(){
+    SmartDashboard.putString("setHeading", getName());
     SwerveModuleState[] states; 
     double pidSpeed = pid.calculate(swerveSubs.getRotation2d().getDegrees(), heading);
+
+    if(pidSpeed > 0.5){
+      pidSpeed = 0.5;
+    }
+    else if(pidSpeed < -0.5){
+      pidSpeed = -0.5;
+    }
 
     states = SwerveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
       ChassisSpeeds.fromFieldRelativeSpeeds(0, 0, pidSpeed, swerveSubs.getRotation2d())
     );
 
-    if(LimelightHelpers.getTV("limelight")){
+   // if(LimelightHelpers.getTV("limelight")){
       swerveSubs.setModuleStates(states);
-    }
+    /* }
     else{
       swerveSubs.stopModules();
     }
-
+  */
   }
   @Override
   public void end(boolean interrupted){
