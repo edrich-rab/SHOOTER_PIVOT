@@ -189,10 +189,6 @@ public class SwerveSubsystem extends SubsystemBase {
     }
   }
 
-  public double getDistanceFromTarget(){ //find out if it is horizontal distance
-    double distance = LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getTranslation().getNorm();
-    return distance;
-  }
 
   @Override
   public void periodic() {

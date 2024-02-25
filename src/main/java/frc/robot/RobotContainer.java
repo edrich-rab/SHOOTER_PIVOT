@@ -8,8 +8,6 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.commands.ManualPivotCmd;
 import frc.robot.commands.PivotPidCmd;
-import frc.robot.commands.setHeading;
-import frc.robot.commands.LimelightDriveAlignCmd;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,8 +23,8 @@ public class RobotContainer {
   private final PivotSubsystem pivotSubs = new PivotSubsystem();
   private final SwerveSubsystem swerveSubs = new SwerveSubsystem(); 
 
-  //private final XboxController joystick = new XboxController(PivotConstants.JOYSTICK_PORT);
-  private final Joystick joystick = new Joystick(PivotConstants.JOYSTICK_PORT);
+  private final XboxController joystick = new XboxController(PivotConstants.JOYSTICK_PORT);
+  //private final Joystick joystick = new Joystick(PivotConstants.JOYSTICK_PORT);
 
   //private final PivotPidCmd pivotAmpShoot = new PivotPidCmd(pivotSubs, 40);
   //private final PivotPidCmd pivotSubShoot = new PivotPidCmd(pivotSubs, 80);
@@ -42,7 +40,7 @@ public class RobotContainer {
 
  
   private void configureBindings(){
-    //new JoystickButton(joystick, 2).onTrue(new PivotPidCmd(pivotSubs, 8));
+    new JoystickButton(joystick, XboxController.Button.kX.value).whileTrue(new PivotPidCmd(pivotSubs, pivotSubs.angleSubwooferShot()));
 
     /* COMMANDS THAT TURN THE PIVOT TO SPECIFIC ANGLES
     new JoystickButton(joystick, XboxController.Button.kX.value).onTrue(new PivotPidCmd(pivotSubs, PivotConstants.ampEnc));
@@ -56,9 +54,9 @@ public class RobotContainer {
     new JoystickButton(joystick, 12).whileTrue(new S_DriveCommand(swerveSubs, () -> joystick.getRawAxis(0), () -> joystick.getRawAxis(1), () -> joystick.getRawAxis(2) , 1));
     */
 
-    new JoystickButton(joystick,12 ).whileTrue(new LimelightDriveAlignCmd(swerveSubs, 1));
+    //new JoystickButton(joystick,12 ).whileTrue(new LimelightDriveAlignCmd(swerveSubs, 1));
     //new JoystickButton(joystick, 10).whileTrue(new PivotPidCmd(pivotSubs, 30));
-    new JoystickButton(joystick, 11).whileTrue(new setHeading(swerveSubs, 90));
+   // new JoystickButton(joystick, 11).whileTrue(new setHeading(swerveSubs, 90));
   }
 
   public Command getAutonomousCommand() {
