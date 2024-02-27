@@ -41,7 +41,8 @@ public class PivotPidCmd extends Command {
   @Override
   public boolean isFinished() {
     if(pivotSub.atSetpoint()){
-      return true;}
+      return true;
+    }
     return false;
   }
 }

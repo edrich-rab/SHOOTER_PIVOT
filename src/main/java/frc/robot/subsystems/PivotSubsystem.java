@@ -33,11 +33,9 @@ public class PivotSubsystem extends SubsystemBase {
 
   private double manualSpeed;
   private double maxPidSpeed;
-
-  private NetworkTable limelight;
   
   private double subwoofHeight;
-  private double distance;
+  //private double distance;
 
   private double tixInOneRotation; 
   private double tixInOneDeg;
@@ -62,7 +60,6 @@ public class PivotSubsystem extends SubsystemBase {
     manualSpeed = 0;
     maxPidSpeed = 0.01;
 
-    limelight = null;
     subwoofHeight = 1.98; //height of subwoofer opening in meters
     tixInOneRotation = 6; // or 4096
     tixInOneDeg = tixInOneRotation/360;
@@ -155,6 +152,9 @@ public class PivotSubsystem extends SubsystemBase {
     double distance = LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getTranslation().getNorm();
     return distance;
   }
+
+
+
  
   @Override
   public void periodic() {

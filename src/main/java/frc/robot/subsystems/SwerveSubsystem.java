@@ -1,39 +1,39 @@
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
-
 import com.kauailabs.navx.frc.AHRS;
 //import com.pathplanner.lib.auto.AutoBuilder;
-//import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.SwerveModuleConstants;
 import frc.robot.Constants.SwerveConstants;
-//import frc.robot.Constants.SwerveConstants.AutonomousConstants;
+//import frc.robot.commands.S_DriveCommand;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-//import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 public class SwerveSubsystem extends SubsystemBase {
-  /* * * INITIALIZATION * * */
 
   //initialize SwerveModules 
+  // private SwerveModule frontLeft, backLeft, frontRight, backRight; 
   private SwerveModule[] swerveModules; 
 
-  //odometer 
+  //odometry 
   private SwerveDriveOdometry odometer; 
   private AHRS navx; 
 
-  // private BooleanSupplier shouldFlipPath = () -> false;
+  private int blueAllianceTags[] = new int[4];
+  private int redAllianceTags[] = new int[4];
+  //desired id that we want
+  //public double fiducialID = LimelightHelpers.getFiducialID("limelight"); 
+
+  private double resetCounts = 0; 
 
   public SwerveSubsystem() {
-
+    //instantiation of SwerveModules 
     swerveModules = new SwerveModule[] {
       new SwerveModule(0, SwerveConstants.FrontLeft.constants), 
       new SwerveModule(1, SwerveConstants.BackLeft.constants), 
@@ -41,67 +41,62 @@ public class SwerveSubsystem extends SubsystemBase {
       new SwerveModule(3, SwerveConstants.BackRight.constants)
     };
 
+    blueAllianceTags = new int[]{1,2,6,7};
+    redAllianceTags = new int[]{4,5,9,10};
 
+    // frontLeft = new SwerveModule(
+    //   SwerveConstants.FL_DRIVE_PORT,
+    //   SwerveConstants.FL_ROTATION_PORT,
+    //   SwerveConstants.FL_ABSOLUTE_ENCODER_PORT,
+    //   SwerveConstants.FL_OFFSET,
+    //   false, 
+    //   true
+    // ); //ba was here hahaa !!!
+
+    // backLeft = new SwerveModule(
+    //   SwerveConstants.BL_DRIVE_PORT, 
+    //   SwerveConstants.BL_ROTATION_PORT, 
+    //   SwerveConstants.BL_ABSOLUTE_ENCODER_PORT, 
+    //   SwerveConstants.BL_OFFSET, 
+    //   false, 
+    //   true
+    // );
+
+    // frontRight = new SwerveModule(
+    //   SwerveConstants.FR_DRIVE_PORT, 
+    //   SwerveConstants.FR_ROTATION_PORT, 
+    //   SwerveConstants.FR_ABSOLUTE_ENCODER_PORT, 
+    //   SwerveConstants.FR_OFFSET, 
+    //   false, 
+    //   true
+    // );
+
+    // backRight = new SwerveModule(
+    //   SwerveConstants.BR_DRIVE_PORT, 
+    //   SwerveConstants.BR_ROTATION_PORT, 
+    //   SwerveConstants.BR_ABSOLUTE_ENCODER_PORT, 
+    //   SwerveConstants.BR_OFFSET, 
+    //   false, 
+    //   true
+    // );
 
     //instantiate navx 
     navx = new AHRS();
-    navx.zeroYaw();
+    navx.reset();
 
+    // SmartDashboard.putNumber("working??", navx.getRawGyroZ());
+    // SmartDashboard.putNumber("init yaww", navx.getYaw());
     //instantiate odometer 
+
     odometer = new SwerveDriveOdometry(
       SwerveConstants.DRIVE_KINEMATICS, 
-      navx.getRotation2d(), 
+      getRotation2d(), 
       getModulePositions()
     );
-
-    // AutoBuilder.configureHolonomic(
-    //   this::getPose, 
-    //   this::resetOdometry, 
-    //   this::getRobotRelativeSpeeds, 
-    //   this::driveRobotRelative, 
-    //   AutonomousConstants.HOLONOMIC_PATH_FOLLOWER_CONFIG, 
-    //   () -> false, 
-    //   this //reference to this subsystem to set requirements 
-    //   );
-
   }
 
-    /* * * ODOMETRY * * */
-
-  //returns the Rotation2d object 
-  //a 2d coordinate represented by a point on the unit circle (the rotation of the robot)
-  public Rotation2d getRotation2d() {
-    return navx.getRotation2d();
-  }
-
-  public void resetNavx() {
-    navx.reset();
-  }
-
-  public Pose2d getPose() {
-    return odometer.getPoseMeters();
-  }
-
-  // FIXME i dont think this works as intended,, resetPosition should reset everything to 0 
-  public void setPose(Pose2d pose) {
-    odometer.resetPosition(getRotation2d(), getModulePositions(), pose);
-  }
-
-  public void resetOdometry(Pose2d pose) {
-    odometer.resetPosition(getRotation2d(), getModulePositions(), pose);
-  }
-
-  public ChassisSpeeds getRobotRelativeSpeeds() {
-    return new ChassisSpeeds(SwerveConstants.DRIVE_KINEMATICS.toChassisSpeeds(getModuleStates()).vxMetersPerSecond, SwerveConstants.DRIVE_KINEMATICS.toChassisSpeeds(getModuleStates()).vyMetersPerSecond, SwerveConstants.DRIVE_KINEMATICS.toChassisSpeeds(getModuleStates()).omegaRadiansPerSecond);
-  }
-
-  public void driveRobotRelative(ChassisSpeeds chassis) {
-    SwerveModuleState[] state = SwerveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(chassis);
-
-    setModuleStates(state);
-  }
-
-  public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldOriented) { //for non field oriented drive
+  /* * * DRIVE * * */
+  public void drive(double xSpeed, double ySpeed, double rotationSpeed, boolean fieldOriented) {
     SwerveModuleState[] swerveModuleStates; 
 
     if (fieldOriented) {
@@ -116,16 +111,59 @@ public class SwerveSubsystem extends SubsystemBase {
 
     setModuleStates(swerveModuleStates);
   }
+
+  /* * * ODOMETRY * * */
+
+  //returns the Rotation2d object 
+  //a 2d coordinate represented by a point on the unit circle (the rotation of the robot)
+  public Rotation2d getRotation2d() {
+    return navx.getRotation2d().times(-1);
+  }
+
+  public void resetNavx() {
+    navx.reset();
+    resetCounts++; 
+  }
+
+  public double getYaw360() {
+    return Math.abs(navx.getAngle()) % 360;
+  }
+
+  public Pose2d getPose() {
+    return odometer.getPoseMeters();
+  }
+
+  public void setPose(Pose2d pose) {
+    odometer.resetPosition(getRotation2d(), getModulePositions(), pose);
+  }
+
+  public void resetOdometry(Pose2d pose) {
+    odometer.resetPosition(getRotation2d(), getModulePositions(), pose);
+  }
+
   /* * * STATES * * */
 
+  /* 
+  public void setDesiredAngle(double desiredAngle) {
+    this.fiducialID = desiredAngle; 
+    SmartDashboard.putNumber("DESIRED", desiredAngle);
+
+  }
+  */
+
+
   //SET STATES 
-  //gets a SwerveModuleStates array from driver control and sets each module to the corresponding SwerveModuleState
+  //gets a SwerveModuleStates array from driver control and sets each module 
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, SwerveConstants.MAX_SPEED);
 
-    for (SwerveModule swerveMod : swerveModules) {
-      swerveMod.setState(desiredStates[swerveMod.moduleID]);
+    for (SwerveModule swerveMod: swerveModules) {
+      swerveMod.setState(desiredStates[swerveMod.moduleNumber]);
     }
+    // frontLeft.setState(desiredStates[0]);
+    // backLeft.setState(desiredStates[1]);
+    // frontRight.setState(desiredStates[2]);
+    // backRight.setState(desiredStates[3]);
   }
 
   //GET STATES 
@@ -135,23 +173,35 @@ public class SwerveSubsystem extends SubsystemBase {
     SwerveModuleState[] states = new SwerveModuleState[4]; 
 
     for (SwerveModule swerveMod : swerveModules) {
-      states[swerveMod.moduleID] = swerveMod.getState();
+      states[swerveMod.moduleNumber] = swerveMod.getState();
     }
 
     return states; 
+    // return new SwerveModuleState[] {
+      // frontLeft.getState(), 
+      // backLeft.getState(), 
+      // frontRight.getState(), 
+      // backRight.getState()
+    // };
   }
 
   //GET POSITIONS
   //returns the positions of the swerve modules in an array 
   //getPosition uses drive enc and module rotation 
   public SwerveModulePosition[] getModulePositions() {
-    SwerveModulePosition[] positions = new SwerveModulePosition[4]; 
-
+    SwerveModulePosition[] positions = new SwerveModulePosition[4];
+ 
     for (SwerveModule swerveMod : swerveModules) {
-      positions[swerveMod.moduleID] = swerveMod.getPosition();
+      positions[swerveMod.moduleNumber] = swerveMod.getPosition();
     }
 
-    return positions;
+    return positions; 
+    // return new SwerveModulePosition[] {
+    //   frontLeft.getPosition(), 
+    //   backLeft.getPosition(), 
+    //   frontRight.getPosition(), 
+    //   backRight.getPosition()
+    // };
   }
 
   //LOCK 
@@ -164,13 +214,18 @@ public class SwerveSubsystem extends SubsystemBase {
     states[3] = new SwerveModuleState(0, new Rotation2d(Math.toRadians(-45)));
 
     for (SwerveModule swerveMod : swerveModules) {
-      swerveMod.setAngle(states[swerveMod.moduleID]);
+      swerveMod.setAngle(states[swerveMod.moduleNumber]);
     }
+
+    // frontLeft.setAngle(fl);
+    // backLeft.setAngle(bl);
+    // frontRight.setAngle(fr);
+    // backRight.setAngle(br);
   }
 
   //STRAIGHTEN THE WHEELS 
   public void straightenWheels() { //set all wheels to 0 degrees 
-    SwerveModuleState[] states = new SwerveModuleState[4]; 
+    SwerveModuleState[] states = new SwerveModuleState[4];
 
     states[0] = new SwerveModuleState(0, new Rotation2d(Math.toRadians(0)));
     states[1] = new SwerveModuleState(0, new Rotation2d(Math.toRadians(0)));
@@ -178,30 +233,73 @@ public class SwerveSubsystem extends SubsystemBase {
     states[3] = new SwerveModuleState(0, new Rotation2d(Math.toRadians(0)));
 
     for (SwerveModule swerveMod : swerveModules) {
-      swerveMod.setState(states[swerveMod.moduleID]);
+      swerveMod.setAngle(states[swerveMod.moduleNumber]);
     }
+
+    // frontLeft.setAngle(fl);
+    // backLeft.setAngle(bl);
+    // frontRight.setAngle(fr);
+    // backRight.setAngle(br);
   }
 
   //STOP 
   public void stopModules() {
+
     for (SwerveModule swerveMod : swerveModules) {
       swerveMod.stop();
     }
+    // frontLeft.stop();
+    // backLeft.stop();
+    // backRight.stop();
+    // frontRight.stop();
+  }
+  
+  public double getDistanceFromTarget(){ //find out if it is horizontal distance
+    double distance = LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getTranslation().getNorm();
+    return distance;
+  }
+
+  
+  public boolean blueAllianceCheck(){
+    //return LimelightHelpers.getFiducialID("limelight") == 1 || LimelightHelpers.getFiducialID("limelight") == 2 || LimelightHelpers.getFiducialID("limelight") == 6 || LimelightHelpers.getFiducialID("limelight") == 7;
+    for(int i = 0; i < blueAllianceTags.length; i++){
+      if(LimelightHelpers.getFiducialID("limelight") == blueAllianceTags[i]){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean redAllianceCheck(){
+   // return LimelightHelpers.getFiducialID("limelight") == 9 || LimelightHelpers.getFiducialID("limelight") == 10 || LimelightHelpers.getFiducialID("limelight") == 5 || LimelightHelpers.getFiducialID("limelight") == 4;
+    for(int i = 0; i < redAllianceTags.length; i++){
+      if(LimelightHelpers.getFiducialID("limelight") == redAllianceTags[i]){
+        return true;
+      }
+    }
+    return false;
   }
 
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    odometer.update(navx.getRotation2d(), getModulePositions());
-    
-    for (SwerveModule swerveMod : swerveModules) {
-      swerveMod.print();
-    }
+    odometer.update(getRotation2d(), getModulePositions());
+    // for (SwerveModule swerveMod : swerveModules) {
+    //   swerveMod.print();
+    // }
+    swerveModules[0].print();
+    swerveModules[1].print();
+    swerveModules[2].print();
+    swerveModules[3].print();
 
+    // frontLeft.print();
+    // backLeft.print();
+    // frontRight.print();
+    // backRight.print();
     SmartDashboard.putNumber("NAVX", navx.getYaw());
-    SmartDashboard.putString("POSE INFO", odometer.getPoseMeters().toString());
-    // SmartDashboard.putString("WORKING DIR", System.getProperty("user.dir"));
+    //SmartDashboard.putNumber("april tag", fiducialID);
+    SmartDashboard.putNumber("RESET COUNTS", resetCounts);
     
   }
 }

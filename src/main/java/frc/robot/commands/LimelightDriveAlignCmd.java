@@ -36,7 +36,6 @@
 //     idealDist = idealDistance;
 //     ally = DriverStation.getAlliance();
 
-//     //FIXME tune the pid!!!!!
 //     drivePid = new PIDController(0.05, 0, 0);
 
 //     addRequirements(swerveSubs);

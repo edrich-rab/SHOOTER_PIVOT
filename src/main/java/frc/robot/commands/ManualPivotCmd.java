@@ -7,6 +7,7 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.PivotSubsystem;
 
 public class ManualPivotCmd extends Command {
@@ -27,13 +28,13 @@ public class ManualPivotCmd extends Command {
   }
 
   @Override
-  public void execute(){ //CHANGE THIS PLS!!!!
-    if(moveSpeed.getAsDouble() > 0.4){
-      pivotSub.stopMotor();
+  public void execute(){
+    if (Math.abs(moveSpeed.getAsDouble()) > Constants.PivotConstants.MAX_PIVOT_SPEED){
+      pivotSub.setManualSpeed(Constants.PivotConstants.MAX_PIVOT_SPEED);
     }
-    else{  
-    pivotSub.setManualSpeed(moveSpeed.getAsDouble());
-    }
+    else{
+      pivotSub.setManualSpeed(moveSpeed.getAsDouble());
+    } 
   }
 
   @Override 

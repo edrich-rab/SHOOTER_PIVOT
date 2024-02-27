@@ -1,6 +1,7 @@
 // make a command for each specific april tag and in each command, initialize to a specific pipeline that only detects certain april tags 
 package frc.robot.commands;
 
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -11,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.LimelightHelpers;
 import frc.robot.subsystems.SwerveSubsystem;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class LimelightTurnAlignCmd extends Command {
 
@@ -20,7 +23,7 @@ public class LimelightTurnAlignCmd extends Command {
 
   DoubleSupplier xSupp, ySupp, zSupp; 
   int pipeline;
-  private boolean fieldOriented;
+  Optional<Alliance> ally;
 
   public LimelightTurnAlignCmd(SwerveSubsystem swerveSubs, DoubleSupplier xSupp, DoubleSupplier ySupp, DoubleSupplier zSupp, boolean fieldOriented, int pipeline) {
     this.swerveSubs = swerveSubs; 
@@ -28,8 +31,8 @@ public class LimelightTurnAlignCmd extends Command {
     this.xSupp = xSupp; 
     this.ySupp = ySupp; 
     this.zSupp = zSupp; 
-    this.fieldOriented = fieldOriented;
     this.pipeline = pipeline;
+    ally = DriverStation.getAlliance();
 
     anglePID = new PIDController(0.001, 0, 0);
 
@@ -65,22 +68,15 @@ public class LimelightTurnAlignCmd extends Command {
 
     
     double rotationSpeed = anglePID.calculate(LimelightHelpers.getTX("limelight"), 0);
-
-    if(fieldOriented){
-      states = SwerveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
-      ChassisSpeeds.fromFieldRelativeSpeeds(rotationSpeed, ySpeed, zSpeed, swerveSubs.getRotation2d())
-      );
-    }
-    else{
-      states = SwerveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
-      new ChassisSpeeds(rotationSpeed, ySpeed, zSpeed)
-      );
-    }
-
+    states = SwerveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
+    ChassisSpeeds.fromFieldRelativeSpeeds(rotationSpeed, ySpeed, zSpeed, swerveSubs.getRotation2d())
+    );
+     
     if(LimelightHelpers.getTV("limelight")){
-      swerveSubs.setModuleStates(states);
+     if ((ally.get() == Alliance.Blue && swerveSubs.blueAllianceCheck()) || (ally.get() == Alliance.Red && swerveSubs.redAllianceCheck())){
+        swerveSubs.setModuleStates(states);
+      }
     }
-    
   }
 
   // Called once the command ends or is interrupted.
