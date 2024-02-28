@@ -17,7 +17,7 @@ public final class Constants {
     public static final double subWooferEnc = 20;
     public static final double ampEnc = 40;
     public static final double wingEnc = 55;
-    public static final double MAX_PIVOT_SPEED = 0.15;
+    public static final double MAX_PIVOT_SPEED = 0.2;
 
   }
 
