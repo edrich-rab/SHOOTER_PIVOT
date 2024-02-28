@@ -25,6 +25,7 @@ public class PivotSubsystem extends SubsystemBase {
   private CANSparkMax pivotMotor;
   private RelativeEncoder encoder;
   private DigitalInput limitSwitch;
+  private DigitalInput bottomLimitSwitch;
 
   private PIDController pid;
   private double setpoint;
@@ -33,6 +34,7 @@ public class PivotSubsystem extends SubsystemBase {
 
   private double manualSpeed;
   private double maxPidSpeed;
+  //private double maxManualSpeed;
   
   private double subwoofHeight;
   //private double distance;
@@ -46,11 +48,11 @@ public class PivotSubsystem extends SubsystemBase {
   private double hypDist;
   private double finalAngle;
 
-  // amount of ticks in one degree = 2.84 encoder tix
-
   public PivotSubsystem(){
     pivotMotor = new CANSparkMax(PivotConstants.PIVOT_MOTOR_PORT, MotorType.kBrushless);
+    pivotMotor.setInverted(true);
     limitSwitch = new DigitalInput(PivotConstants.PIVOT_LIMIT);
+    bottomLimitSwitch = new DigitalInput(PivotConstants.PIVOT_BOTTOM_LIMIT);
     encoder = pivotMotor.getEncoder();
     
     pid = new PIDController(0.01, 0, 0);
@@ -58,17 +60,18 @@ public class PivotSubsystem extends SubsystemBase {
     setpointTolerance = 0.5;
 
     manualSpeed = 0;
-    maxPidSpeed = 0.01;
+    //maxManualSpeed = 0.3;
+    maxPidSpeed = 0.2;
 
     subwoofHeight = 1.98; //height of subwoofer opening in meters
-    tixInOneRotation = 6; // or 4096
+    tixInOneRotation = 1; // or 4096
     tixInOneDeg = tixInOneRotation/360;
 
-    limelightAngle = 10;
-    aprilSubDis = 0.43;
+    limelightAngle = 105;
+    aprilSubDis = 0.43; //a
     beta = 90 - limelightAngle;
-    hypDist = Math.pow(aprilSubDis, 2) + Math.pow(getDistanceFromTarget(), 2) - 2*(aprilSubDis* getDistanceFromTarget()* Math.cos(beta));
-    finalAngle = Math.asin(aprilSubDis*Math.sin(beta)/ hypDist);
+    hypDist = Math.sqrt(Math.pow(aprilSubDis, 2) + Math.pow(getDistanceFromTarget(), 2) - 2*(aprilSubDis* getDistanceFromTarget()* Math.cos(beta))); //b
+    finalAngle = Math.asin(aprilSubDis*Math.sin(beta)/ hypDist); //A
 
   }
 
@@ -110,7 +113,11 @@ public class PivotSubsystem extends SubsystemBase {
   ////////////////////
 
   public boolean topLimitSwitchPressed(){
-    return limitSwitch.get();
+    return !limitSwitch.get();
+  }
+
+  public boolean bottomLimitSwitchPressed(){
+    return !bottomLimitSwitch.get();
   }
 
   public boolean atSetpoint(){ 
@@ -127,7 +134,7 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double deadzone(double speed){
-    if(speed < 0.3 && speed > -0.3 ){
+    if(Math.abs(speed) < 0.1){
       return 0;
     }
     else{
@@ -152,9 +159,6 @@ public class PivotSubsystem extends SubsystemBase {
     double distance = LimelightHelpers.getCameraPose3d_TargetSpace("limelight").getTranslation().getNorm();
     return distance;
   }
-
-
-
  
   @Override
   public void periodic() {
@@ -165,7 +169,7 @@ public class PivotSubsystem extends SubsystemBase {
     double pidSpeed = 0;
 
     if(pidOn){
-      pidSpeed = -pid.calculate(setpoint, encoder.getPosition());
+      pidSpeed = pid.calculate(setpoint, encoder.getPosition());
     }
     else{
       pidSpeed = manualSpeed;
@@ -175,19 +179,24 @@ public class PivotSubsystem extends SubsystemBase {
     if(topLimitSwitchPressed() && pidSpeed > 0){
       pidSpeed = 0;
     }
-    else if(pidSpeed > maxPidSpeed){
-      pidSpeed = maxPidSpeed;
-    }
-    else if(pidSpeed < -maxPidSpeed){
-      pidSpeed = - maxPidSpeed;
+    // else if(pidSpeed > maxPidSpeed){
+    //   pidSpeed = maxPidSpeed;
+    // }
+    // else if(pidSpeed < -maxPidSpeed){
+    //   pidSpeed = - maxPidSpeed;
+    // }
+
+    if(bottomLimitSwitchPressed() && pidSpeed < 0){
+      pidSpeed = 0;
     }
     
     pivotMotor.set(pidSpeed);
 
     SmartDashboard.putBoolean("Pid On?", pidOn);
     SmartDashboard.putNumber("Speed", pidSpeed);
-    SmartDashboard.putBoolean("Limit switch pressed?", topLimitSwitchPressed());
+    SmartDashboard.putBoolean("Top limit switch pressed?", topLimitSwitchPressed());
     SmartDashboard.putNumber("Encoder values", returnEncoder());
+    SmartDashboard.putBoolean("Bottom limit switch pressed?", bottomLimitSwitchPressed());
     
     //SmartDashboard.putNumber("distance from limelight", getDistanceFromTarget());
 

@@ -26,21 +26,16 @@ public class RobotContainer {
   private final XboxController joystick = new XboxController(PivotConstants.JOYSTICK_PORT);
   //private final Joystick joystick = new Joystick(PivotConstants.JOYSTICK_PORT);
 
-  //private final PivotPidCmd pivotAmpShoot = new PivotPidCmd(pivotSubs, 40);
-  //private final PivotPidCmd pivotSubShoot = new PivotPidCmd(pivotSubs, 80);
-  //private final PivotPidCmd  pivotWingShoot = new PivotPidCmd(pivotSubs, 60);
-  //private final PivotPidCmd autoSubwoofShoot = new PivotPidCmd(pivotSubs, pivotSubs.angleSubwooferShot());
-
 
   public RobotContainer() {
-    //pivotSubs.setDefaultCommand(new ManualPivotCmd(pivotSubs, () -> joystick.getLeftY()));
+    pivotSubs.setDefaultCommand(new ManualPivotCmd(pivotSubs, () -> joystick.getLeftY()));
     //pivotSubs.setDefaultCommand(new ManualPivotCmd(pivotSubs, () -> joystick.getRawAxis(1)));
     configureBindings();
   }
 
  
   private void configureBindings(){
-    new JoystickButton(joystick, XboxController.Button.kX.value).whileTrue(new PivotPidCmd(pivotSubs, pivotSubs.angleSubwooferShot()));
+    //new JoystickButton(joystick, XboxController.Button.kX.value).whileTrue(new PivotPidCmd(pivotSubs, pivotSubs.angleSubwooferShot()));
 
     /* COMMANDS THAT TURN THE PIVOT TO SPECIFIC ANGLES
     new JoystickButton(joystick, XboxController.Button.kX.value).onTrue(new PivotPidCmd(pivotSubs, PivotConstants.ampEnc));

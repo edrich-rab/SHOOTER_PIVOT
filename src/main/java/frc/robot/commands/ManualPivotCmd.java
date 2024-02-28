@@ -30,7 +30,7 @@ public class ManualPivotCmd extends Command {
   @Override
   public void execute(){
     if (Math.abs(moveSpeed.getAsDouble()) > Constants.PivotConstants.MAX_PIVOT_SPEED){
-      pivotSub.setManualSpeed(Constants.PivotConstants.MAX_PIVOT_SPEED);
+      pivotSub.setManualSpeed(Math.copySign(Constants.PivotConstants.MAX_PIVOT_SPEED, moveSpeed.getAsDouble()));
     }
     else{
       pivotSub.setManualSpeed(moveSpeed.getAsDouble());

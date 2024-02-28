@@ -9,14 +9,15 @@ public final class Constants {
   }
 
   public static class PivotConstants{
-    public static final int PIVOT_MOTOR_PORT = 0;
-    public static final int PIVOT_LIMIT = 9;
+    public static final int PIVOT_MOTOR_PORT = 11;
+    public static final int PIVOT_LIMIT = 4;
     public static final int JOYSTICK_PORT = 0;
+    public static final int PIVOT_BOTTOM_LIMIT = 5;
 
     public static final double subWooferEnc = 20;
     public static final double ampEnc = 40;
     public static final double wingEnc = 55;
-    public static final double MAX_PIVOT_SPEED = 0.25;
+    public static final double MAX_PIVOT_SPEED = 0.15;
 
   }
 
