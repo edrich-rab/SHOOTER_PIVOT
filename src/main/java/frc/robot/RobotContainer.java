@@ -33,9 +33,14 @@ public class RobotContainer {
     configureBindings();
   }
 
- 
+  //0.083 encoder counts in 1 degree
+  //
   private void configureBindings(){
-    //new JoystickButton(joystick, XboxController.Button.kX.value).whileTrue(new PivotPidCmd(pivotSubs, pivotSubs.angleSubwooferShot()));
+    new JoystickButton(joystick, XboxController.Button.kX.value).onTrue(new PivotPidCmd(pivotSubs, pivotSubs.angleSubwooferShot()));
+    new JoystickButton(joystick, XboxController.Button.kY.value).onTrue(new PivotPidCmd(pivotSubs, 0)); //runs to starting position
+    new JoystickButton(joystick, XboxController.Button.kB.value).onTrue(new PivotPidCmd(pivotSubs, -4));
+    new JoystickButton(joystick, XboxController.Button.kA.value).onTrue(new PivotPidCmd(pivotSubs, -10));
+      
 
     /* COMMANDS THAT TURN THE PIVOT TO SPECIFIC ANGLES
     new JoystickButton(joystick, XboxController.Button.kX.value).onTrue(new PivotPidCmd(pivotSubs, PivotConstants.ampEnc));

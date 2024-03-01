@@ -34,13 +34,11 @@ public class PivotSubsystem extends SubsystemBase {
 
   private double manualSpeed;
   private double maxPidSpeed;
-  //private double maxManualSpeed;
   
   private double subwoofHeight;
   //private double distance;
 
-  private double tixInOneRotation; 
-  private double tixInOneDeg;
+  private double encInOneDeg;
 
   private double limelightAngle;
   private double aprilSubDis; //Distance between subwoofer opening & apriltag
@@ -55,17 +53,15 @@ public class PivotSubsystem extends SubsystemBase {
     bottomLimitSwitch = new DigitalInput(PivotConstants.PIVOT_BOTTOM_LIMIT);
     encoder = pivotMotor.getEncoder();
     
-    pid = new PIDController(0.01, 0, 0);
+    pid = new PIDController(0.05, 0, 0);
     setpoint = 0;
     setpointTolerance = 0.5;
 
     manualSpeed = 0;
-    //maxManualSpeed = 0.3;
     maxPidSpeed = 0.2;
 
     subwoofHeight = 1.98; //height of subwoofer opening in meters
-    tixInOneRotation = 1; // or 4096
-    tixInOneDeg = tixInOneRotation/360;
+    encInOneDeg = 0.083;
 
     limelightAngle = 105;
     aprilSubDis = 0.43; //a
@@ -152,7 +148,7 @@ public class PivotSubsystem extends SubsystemBase {
 
   // returns the encoder count of the angle shooter should go to
   public double angleSubwooferShot(){
-    return finalAngle * tixInOneDeg ;
+    return -finalAngle * encInOneDeg;
   }
 
   public double getDistanceFromTarget(){
@@ -169,29 +165,21 @@ public class PivotSubsystem extends SubsystemBase {
     double pidSpeed = 0;
 
     if(pidOn){
-      pidSpeed = pid.calculate(setpoint, encoder.getPosition());
+      pidSpeed = pid.calculate(encoder.getPosition(), setpoint);
     }
     else{
       pidSpeed = manualSpeed;
     }
 
-    
     if(topLimitSwitchPressed() && pidSpeed > 0){
       pidSpeed = 0;
     }
-    // else if(pidSpeed > maxPidSpeed){
-    //   pidSpeed = maxPidSpeed;
-    // }
-    // else if(pidSpeed < -maxPidSpeed){
-    //   pidSpeed = - maxPidSpeed;
-    // }
 
     if(bottomLimitSwitchPressed() && pidSpeed < 0){
       pidSpeed = 0;
     }
     
     pivotMotor.set(pidSpeed);
-
     SmartDashboard.putBoolean("Pid On?", pidOn);
     SmartDashboard.putNumber("Speed", pidSpeed);
     SmartDashboard.putBoolean("Top limit switch pressed?", topLimitSwitchPressed());

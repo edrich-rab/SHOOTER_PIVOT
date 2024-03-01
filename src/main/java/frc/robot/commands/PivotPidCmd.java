@@ -29,7 +29,7 @@ public class PivotPidCmd extends Command {
 
   @Override
   public void execute(){
-   // SmartDashboard.putString("current command", getName());
+   SmartDashboard.putString("Pivot Pid running", getName());
     pivotSub.changeSetpoint(setpoint);
   }
 
