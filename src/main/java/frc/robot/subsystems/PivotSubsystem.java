@@ -12,18 +12,19 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.math.controller.PIDController;
+import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.geometry.*;
 
 public class PivotSubsystem extends SubsystemBase {
   private CANSparkMax pivotMotor;
-  private RelativeEncoder encoder;
+  private AbsoluteEncoder encoder;
   private DigitalInput limitSwitch;
   private DigitalInput bottomLimitSwitch;
 
@@ -51,7 +52,7 @@ public class PivotSubsystem extends SubsystemBase {
     pivotMotor.setInverted(true);
     limitSwitch = new DigitalInput(PivotConstants.PIVOT_LIMIT);
     bottomLimitSwitch = new DigitalInput(PivotConstants.PIVOT_BOTTOM_LIMIT);
-    encoder = pivotMotor.getEncoder();
+    encoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
     
     pid = new PIDController(0.05, 0, 0);
     setpoint = 0;
@@ -84,7 +85,7 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public void resetEnc(){
-    encoder.setPosition(0);
+    encoder.setZeroOffset(encoder.getPosition());
   }
 
   ///////////////////

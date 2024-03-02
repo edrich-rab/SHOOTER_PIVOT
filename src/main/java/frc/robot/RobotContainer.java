@@ -8,6 +8,8 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.commands.ManualPivotCmd;
 import frc.robot.commands.PivotPidCmd;
+import frc.robot.commands.Violet;
+import frc.robot.subsystems.Lights;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -22,6 +24,7 @@ public class RobotContainer {
 
   private final PivotSubsystem pivotSubs = new PivotSubsystem();
   private final SwerveSubsystem swerveSubs = new SwerveSubsystem(); 
+  public static Lights lights = new Lights();
 
   private final XboxController joystick = new XboxController(PivotConstants.JOYSTICK_PORT);
   //private final Joystick joystick = new Joystick(PivotConstants.JOYSTICK_PORT);
@@ -40,6 +43,8 @@ public class RobotContainer {
     new JoystickButton(joystick, XboxController.Button.kY.value).onTrue(new PivotPidCmd(pivotSubs, 0)); //runs to starting position
     new JoystickButton(joystick, XboxController.Button.kB.value).onTrue(new PivotPidCmd(pivotSubs, -4));
     new JoystickButton(joystick, XboxController.Button.kA.value).onTrue(new PivotPidCmd(pivotSubs, -10));
+
+    //new JoystickButton(joystick, XboxController.Button.kX.value).onTrue(new Violet(lights));
       
 
     /* COMMANDS THAT TURN THE PIVOT TO SPECIFIC ANGLES
