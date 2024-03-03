@@ -10,7 +10,7 @@ public final class Constants {
 
   public static class PivotConstants{
     public static final int PIVOT_MOTOR_PORT = 11;
-    public static final int PIVOT_LIMIT = 4;
+    public static final int PIVOT_TOP_LIMIT = 4;
     public static final int JOYSTICK_PORT = 0;
     public static final int PIVOT_BOTTOM_LIMIT = 5;
 

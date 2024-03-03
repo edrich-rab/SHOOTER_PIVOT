@@ -26,26 +26,35 @@ public class RobotContainer {
   private final SwerveSubsystem swerveSubs = new SwerveSubsystem(); 
   public static Lights lights = new Lights();
 
-  private final XboxController joystick = new XboxController(PivotConstants.JOYSTICK_PORT);
-  //private final Joystick joystick = new Joystick(PivotConstants.JOYSTICK_PORT);
+  //private final XboxController joystick = new XboxController(PivotConstants.JOYSTICK_PORT);
+  private final Joystick joystick = new Joystick(PivotConstants.JOYSTICK_PORT);
 
 
   public RobotContainer() {
-    pivotSubs.setDefaultCommand(new ManualPivotCmd(pivotSubs, () -> joystick.getLeftY()));
-    //pivotSubs.setDefaultCommand(new ManualPivotCmd(pivotSubs, () -> joystick.getRawAxis(1)));
+    //pivotSubs.setDefaultCommand(new ManualPivotCmd(pivotSubs, () -> joystick.getLeftY()));
+    pivotSubs.setDefaultCommand(new ManualPivotCmd(pivotSubs, () -> joystick.getRawAxis(1)));
     configureBindings();
   }
 
   //0.083 encoder counts in 1 degree
   //
   private void configureBindings(){
-    new JoystickButton(joystick, XboxController.Button.kX.value).onTrue(new PivotPidCmd(pivotSubs, pivotSubs.angleSubwooferShot()));
-    new JoystickButton(joystick, XboxController.Button.kY.value).onTrue(new PivotPidCmd(pivotSubs, 0)); //runs to starting position
-    new JoystickButton(joystick, XboxController.Button.kB.value).onTrue(new PivotPidCmd(pivotSubs, -4));
-    new JoystickButton(joystick, XboxController.Button.kA.value).onTrue(new PivotPidCmd(pivotSubs, -10));
+    // new JoystickButton(joystick, XboxController.Button.kX.value).onTrue(new PivotPidCmd(pivotSubs, pivotSubs.angleSubwooferShot()));
+    // new JoystickButton(joystick, XboxController.Button.kY.value).onTrue(new PivotPidCmd(pivotSubs, 0)); //runs to starting position
 
-    //new JoystickButton(joystick, XboxController.Button.kX.value).onTrue(new Violet(lights));
-      
+    // //TEST
+    // new JoystickButton(joystick, XboxController.Button.kB.value).onTrue(new PivotPidCmd(pivotSubs, -4));
+    // new JoystickButton(joystick, XboxController.Button.kA.value).onTrue(new PivotPidCmd(pivotSubs, -10));
+
+    new JoystickButton(joystick, 3).onTrue(new PivotPidCmd(pivotSubs, pivotSubs.angleSubwooferShot()));
+    new JoystickButton(joystick, 4).onTrue(new PivotPidCmd(pivotSubs, 0)); //runs to starting position
+
+    //TEST
+    new JoystickButton(joystick, 5).onTrue(new PivotPidCmd(pivotSubs, -4));
+    new JoystickButton(joystick, 6).onTrue(new PivotPidCmd(pivotSubs, -10));
+
+
+
 
     /* COMMANDS THAT TURN THE PIVOT TO SPECIFIC ANGLES
     new JoystickButton(joystick, XboxController.Button.kX.value).onTrue(new PivotPidCmd(pivotSubs, PivotConstants.ampEnc));

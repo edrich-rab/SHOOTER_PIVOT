@@ -24,6 +24,7 @@ public class ManualPivotCmd extends Command {
 
   @Override
   public void initialize(){
+    pivotSub.init();
     pivotSub.disablePid();
   }
 

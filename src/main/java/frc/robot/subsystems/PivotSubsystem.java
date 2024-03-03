@@ -50,9 +50,15 @@ public class PivotSubsystem extends SubsystemBase {
   public PivotSubsystem(){
     pivotMotor = new CANSparkMax(PivotConstants.PIVOT_MOTOR_PORT, MotorType.kBrushless);
     pivotMotor.setInverted(true);
-    limitSwitch = new DigitalInput(PivotConstants.PIVOT_LIMIT);
+    limitSwitch = new DigitalInput(PivotConstants.PIVOT_TOP_LIMIT);
     bottomLimitSwitch = new DigitalInput(PivotConstants.PIVOT_BOTTOM_LIMIT);
     encoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
+    encoder.setZeroOffset(0);
+    // starting angle: 60 , starting enc value: 0.57
+    //end angle: 180  , end enc value: 0.64
+    encoder.setPositionConversionFactor(1);
+
+    // encoder.setInverted(true);
     
     pid = new PIDController(0.05, 0, 0);
     setpoint = 0;
@@ -159,9 +165,9 @@ public class PivotSubsystem extends SubsystemBase {
  
   @Override
   public void periodic() {
-    if(topLimitSwitchPressed()){
-      resetEnc();
-    }
+    // if(topLimitSwitchPressed()){
+    //   resetEnc();
+    // }
   
     double pidSpeed = 0;
 
