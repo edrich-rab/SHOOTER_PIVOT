@@ -56,7 +56,7 @@ public class PivotSubsystem extends SubsystemBase {
     encoder.setZeroOffset(0);
     // starting angle: 60 , starting enc value: 0.57
     //end angle: 180  , end enc value: 0.64
-    encoder.setPositionConversionFactor(1);
+    encoder.setPositionConversionFactor(1.0);
 
     // encoder.setInverted(true);
     
@@ -79,7 +79,7 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public void init(){
-    pivotMotor.setIdleMode(IdleMode.kBrake);
+    pivotMotor.setIdleMode(IdleMode.kCoast);
   }
 
   //////////////////////
@@ -191,6 +191,8 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Speed", pidSpeed);
     SmartDashboard.putBoolean("Top limit switch pressed?", topLimitSwitchPressed());
     SmartDashboard.putNumber("Encoder values", returnEncoder());
+    SmartDashboard.putNumber("Encoder Conversion Factor", encoder.getPositionConversionFactor() );
+    SmartDashboard.putNumber("Zero Offset", encoder.getZeroOffset());
     SmartDashboard.putBoolean("Bottom limit switch pressed?", bottomLimitSwitchPressed());
     
     //SmartDashboard.putNumber("distance from limelight", getDistanceFromTarget());
