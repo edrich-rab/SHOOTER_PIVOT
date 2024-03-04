@@ -53,10 +53,10 @@ public class PivotSubsystem extends SubsystemBase {
     limitSwitch = new DigitalInput(PivotConstants.PIVOT_TOP_LIMIT);
     bottomLimitSwitch = new DigitalInput(PivotConstants.PIVOT_BOTTOM_LIMIT);
     encoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
-    encoder.setZeroOffset(0);
+    encoder.setZeroOffset(257.287);
     // starting angle: 60 , starting enc value: 0.57
     //end angle: 180  , end enc value: 0.64
-    encoder.setPositionConversionFactor(1.0);
+    encoder.setPositionConversionFactor(342.499);
 
     // encoder.setInverted(true);
     
