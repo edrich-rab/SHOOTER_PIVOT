@@ -47,20 +47,31 @@ public class PivotSubsystem extends SubsystemBase {
   private double hypDist;
   private double finalAngle;
 
+  //TEST
+  private double targetOffsetAngle_Vertical;
+  private double limelightLensHeightInches;
+  private double goalHeightInches;
+  private double angleToGoalDegrees;
+  private double angleToGoalRadians;
+  private double distanceFromLimelightToGoalInches;
+
   public PivotSubsystem(){
     pivotMotor = new CANSparkMax(PivotConstants.PIVOT_MOTOR_PORT, MotorType.kBrushless);
     pivotMotor.setInverted(true);
     limitSwitch = new DigitalInput(PivotConstants.PIVOT_TOP_LIMIT);
     bottomLimitSwitch = new DigitalInput(PivotConstants.PIVOT_BOTTOM_LIMIT);
     encoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
+    // old: 257.287
     encoder.setZeroOffset(0);
     // starting angle: 60 , starting enc value: 0.57
     //end angle: 180  , end enc value: 0.64
+
+    //old: 342.499
     encoder.setPositionConversionFactor(1);
 
     // encoder.setInverted(true);
     
-    pid = new PIDController(0.05, 0, 0);
+    pid = new PIDController(0.03, 0, 0);
     setpoint = 0;
     setpointTolerance = 0.5;
 
@@ -70,11 +81,19 @@ public class PivotSubsystem extends SubsystemBase {
     subwoofHeight = 1.98; //height of subwoofer opening in meters
     encInOneDeg = 0.083;
 
-    limelightAngle = 105;
     aprilSubDis = 0.43; //a
-    beta = 90 - limelightAngle;
-    hypDist = Math.sqrt(Math.pow(aprilSubDis, 2) + Math.pow(getDistanceFromTarget(), 2) - 2*(aprilSubDis* getDistanceFromTarget()* Math.cos(beta))); //b
-    finalAngle = Math.asin(aprilSubDis*Math.sin(beta)/ hypDist); //A
+    beta = 90 + limelightAngle;
+  
+    //PRAYING THIS WORKS
+    limelightAngle = 16.0;
+    targetOffsetAngle_Vertical = 15.0;
+    limelightLensHeightInches = 16.0;
+    goalHeightInches = 45.0;
+    angleToGoalDegrees = limelightAngle + targetOffsetAngle_Vertical;
+    angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+    
+    distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+
 
   }
 
@@ -155,7 +174,7 @@ public class PivotSubsystem extends SubsystemBase {
 
   // returns the encoder count of the angle shooter should go to
   public double angleSubwooferShot(){
-    return -finalAngle * encInOneDeg;
+    return finalAngle;
   }
 
   public double getDistanceFromTarget(){
@@ -168,6 +187,9 @@ public class PivotSubsystem extends SubsystemBase {
     // if(topLimitSwitchPressed()){
     //   resetEnc();
     // }
+
+    hypDist = Math.sqrt(Math.pow(aprilSubDis, 2) + Math.pow(getDistanceFromTarget(), 2) - 2*(aprilSubDis* getDistanceFromTarget()* Math.cos(beta))); //b
+    finalAngle = Math.asin(aprilSubDis*Math.sin(beta)/ hypDist); //A
   
     double pidSpeed = 0;
 
@@ -192,6 +214,8 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Top limit switch pressed?", topLimitSwitchPressed());
     SmartDashboard.putNumber("Encoder values", returnEncoder());
     SmartDashboard.putBoolean("Bottom limit switch pressed?", bottomLimitSwitchPressed());
+    SmartDashboard.putNumber("calculated angle", finalAngle);
+    SmartDashboard.putNumber("distance from limelight", getDistanceFromTarget());
     
     //SmartDashboard.putNumber("distance from limelight", getDistanceFromTarget());
 
