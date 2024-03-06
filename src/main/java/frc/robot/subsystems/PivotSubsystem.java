@@ -21,6 +21,7 @@ import edu.wpi.first.math.controller.PIDController;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.util.Units;
 
 public class PivotSubsystem extends SubsystemBase {
   private CANSparkMax pivotMotor;
@@ -39,12 +40,8 @@ public class PivotSubsystem extends SubsystemBase {
   private double subwoofHeight;
   //private double distance;
 
-  private double encInOneDeg;
 
-  private double limelightAngle;
-  private double aprilSubDis; //Distance between subwoofer opening & apriltag
-  private double beta; 
-  private double hypDist;
+  private double limelightMountAngleDegrees;
   private double finalAngle;
 
   //TEST
@@ -52,26 +49,22 @@ public class PivotSubsystem extends SubsystemBase {
   private double limelightLensHeightInches;
   private double goalHeightInches;
   private double angleToGoalDegrees;
-  private double angleToGoalRadians;
-  private double distanceFromLimelightToGoalInches;
+  private double horizontalDist;
 
   public PivotSubsystem(){
     pivotMotor = new CANSparkMax(PivotConstants.PIVOT_MOTOR_PORT, MotorType.kBrushless);
-    pivotMotor.setInverted(true);
+    pivotMotor.setInverted(false);
     limitSwitch = new DigitalInput(PivotConstants.PIVOT_TOP_LIMIT);
     bottomLimitSwitch = new DigitalInput(PivotConstants.PIVOT_BOTTOM_LIMIT);
     encoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
-    // old: 257.287
-    encoder.setZeroOffset(0);
-    // starting angle: 60 , starting enc value: 0.57
-    //end angle: 180  , end enc value: 0.64
+  
+    encoder.setZeroOffset(270);
 
-    //old: 342.499
-    encoder.setPositionConversionFactor(1);
+    encoder.setPositionConversionFactor(360);
 
-    // encoder.setInverted(true);
+    // encoder.setInverted(true);S
     
-    pid = new PIDController(0.03, 0, 0);
+    pid = new PIDController(0.005, 0, 0);
     setpoint = 0;
     setpointTolerance = 0.5;
 
@@ -79,21 +72,9 @@ public class PivotSubsystem extends SubsystemBase {
     maxPidSpeed = 0.2;
 
     subwoofHeight = 1.98; //height of subwoofer opening in meters
-    encInOneDeg = 0.083;
 
-    aprilSubDis = 0.43; //a
-    beta = 90 + limelightAngle;
-  
-    //PRAYING THIS WORKS
-    limelightAngle = 16.0;
-    targetOffsetAngle_Vertical = 15.0;
-    limelightLensHeightInches = 16.0;
-    goalHeightInches = 45.0;
-    angleToGoalDegrees = limelightAngle + targetOffsetAngle_Vertical;
-    angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
-    
-    distanceFromLimelightToGoalInches = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
-
+    pid.enableContinuousInput(0, 260); 
+    pid.setTolerance(2);
 
   }
 
@@ -127,7 +108,7 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public void changeSetpoint(double newSetpoint){
-    setpoint = newSetpoint;
+    setpoint = 360 - newSetpoint;
   }
 
   /////////////////////
@@ -184,12 +165,8 @@ public class PivotSubsystem extends SubsystemBase {
  
   @Override
   public void periodic() {
-    // if(topLimitSwitchPressed()){
-    //   resetEnc();
-    // }
-
-    hypDist = Math.sqrt(Math.pow(aprilSubDis, 2) + Math.pow(getDistanceFromTarget(), 2) - 2*(aprilSubDis* getDistanceFromTarget()* Math.cos(beta))); //b
-    finalAngle = Math.asin(aprilSubDis*Math.sin(beta)/ hypDist); //A
+    horizontalDist = Units.inchesToMeters(43) / (Math.tan(Units.degreesToRadians(LimelightHelpers.getTY("limelight") + 15)));
+    finalAngle = Units.radiansToDegrees(Math.atan((Units.inchesToMeters(43) + Units.inchesToMeters(21))/horizontalDist));
   
     double pidSpeed = 0;
 
@@ -200,14 +177,16 @@ public class PivotSubsystem extends SubsystemBase {
       pidSpeed = manualSpeed;
     }
 
-    if(topLimitSwitchPressed() && pidSpeed > 0){
+    if(topLimitSwitchPressed() && pidSpeed < 0){
       pidSpeed = 0;
+    }
+    else if(bottomLimitSwitchPressed() && pidSpeed > 0){
+      pidSpeed = 0;
+    }
+    else if(pidSpeed > maxPidSpeed){
+      pidSpeed = maxPidSpeed;
     }
 
-    if(bottomLimitSwitchPressed() && pidSpeed < 0){
-      pidSpeed = 0;
-    }
-    
     pivotMotor.set(pidSpeed);
     SmartDashboard.putBoolean("Pid On?", pidOn);
     SmartDashboard.putNumber("Speed", pidSpeed);
@@ -215,9 +194,12 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Encoder values", returnEncoder());
     SmartDashboard.putBoolean("Bottom limit switch pressed?", bottomLimitSwitchPressed());
     SmartDashboard.putNumber("calculated angle", finalAngle);
-    SmartDashboard.putNumber("distance from limelight", getDistanceFromTarget());
-    
-    //SmartDashboard.putNumber("distance from limelight", getDistanceFromTarget());
+    SmartDashboard.putNumber("distance from limelight", horizontalDist);
+    SmartDashboard.putBoolean("at setpoint?", pid.atSetpoint());
+    SmartDashboard.putNumber("pid setpoint", setpoint);
+
+    SmartDashboard.putNumber("TY", LimelightHelpers.getTY("limelight"));
+    SmartDashboard.putNumber("degree of shooter", encoder.getPosition());
 
   }
 }

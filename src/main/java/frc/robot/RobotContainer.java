@@ -45,6 +45,7 @@ public class RobotContainer {
 
     new JoystickButton(joystick, 3).onTrue(new PivotPidCmd(pivotSubs, pivotSubs.angleSubwooferShot()));
     new JoystickButton(joystick, 4).onTrue(new PivotPidCmd(pivotSubs, 0)); //runs to starting position
+    new JoystickButton(joystick, 6).onTrue(new PivotPidCmd(pivotSubs, 45));
 
     //new JoystickButton(joystick, 5).whileTrue(new LimelightTurnAlignCmd(swerveSubs, () -> joystick.getRawAxis(1), () -> joystick.getRawAxis(2), () -> joystick.getRawAxis(3), false, 0));
 
