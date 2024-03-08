@@ -42,6 +42,7 @@ public class PivotSubsystem extends SubsystemBase {
   private double finalAngle;
 
   private double horizontalDist;
+  private double statsAngleCalc; 
 
   public PivotSubsystem(){
     pivotMotor = new CANSparkMax(PivotConstants.PIVOT_MOTOR_PORT, MotorType.kBrushless);
@@ -156,6 +157,8 @@ public class PivotSubsystem extends SubsystemBase {
   public void periodic() {
     horizontalDist = Units.inchesToMeters(43) / (Math.tan(Units.degreesToRadians(LimelightHelpers.getTY("limelight") + 15)));
     finalAngle = Units.radiansToDegrees(Math.atan((Units.inchesToMeters(43) + Units.inchesToMeters(21))/horizontalDist));
+    statsAngleCalc = 86 + (-9.5 * horizontalDist) + (0.386 * Math.pow(horizontalDist, 2)); 
+    statsAngleCalc /= 2;
   
     double pidSpeed = 0;
 
