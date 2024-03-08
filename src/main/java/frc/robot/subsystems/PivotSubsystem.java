@@ -42,6 +42,7 @@ public class PivotSubsystem extends SubsystemBase {
   private double finalAngle;
 
   private double horizontalDist;
+  private double statsAngleCalc; 
 
   private double statsCalcAngle;
 
@@ -162,6 +163,8 @@ public class PivotSubsystem extends SubsystemBase {
     statsCalcAngle = 84.3 + (-9.18 * horizontalDist) + (0.369 * Math.pow(horizontalDist, 2));
 
     finalAngle = Units.radiansToDegrees(Math.atan((Units.inchesToMeters(43) + Units.inchesToMeters(21))/horizontalDist));
+    statsAngleCalc = 86 + (-9.5 * horizontalDist) + (0.386 * Math.pow(horizontalDist, 2)); 
+    statsAngleCalc /= 2;
   
     double pidSpeed = 0;
 
