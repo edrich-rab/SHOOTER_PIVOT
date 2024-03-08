@@ -26,12 +26,13 @@ public class PivotPidCmd extends Command {
   public void initialize(){
     pivotSub.init();
     pivotSub.enablePid();
+    //pivotSub.disablePid();
   }
 
   @Override
   public void execute(){
    //SmartDashboard.putString("Pivot Pid running", getName());
-    pivotSub.changeSetpoint(setpoint);
+    pivotSub.changeSetpoint(setpoint + offset);
     //SmartDashboard.putNumber("setpoint", setpoint);
   }
 

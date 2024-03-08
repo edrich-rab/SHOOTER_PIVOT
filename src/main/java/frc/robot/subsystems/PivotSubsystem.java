@@ -37,18 +37,10 @@ public class PivotSubsystem extends SubsystemBase {
   private double manualSpeed;
   private double maxPidSpeed;
   
-  private double subwoofHeight;
   //private double distance;
 
-
-  private double limelightMountAngleDegrees;
   private double finalAngle;
 
-  //TEST
-  private double targetOffsetAngle_Vertical;
-  private double limelightLensHeightInches;
-  private double goalHeightInches;
-  private double angleToGoalDegrees;
   private double horizontalDist;
 
   public PivotSubsystem(){
@@ -61,20 +53,17 @@ public class PivotSubsystem extends SubsystemBase {
     encoder.setZeroOffset(270);
 
     encoder.setPositionConversionFactor(360);
-
-    // encoder.setInverted(true);S
     
-    pid = new PIDController(0.005, 0, 0);
+    pid = new PIDController(0.01, 0, 0);
     setpoint = 0;
-    setpointTolerance = 0.5;
 
     manualSpeed = 0;
     maxPidSpeed = 0.2;
 
-    subwoofHeight = 1.98; //height of subwoofer opening in meters
+    //subwoofHeight = 1.98; //height of subwoofer opening in meters
 
     pid.enableContinuousInput(0, 260); 
-    pid.setTolerance(2);
+    pid.setTolerance(1.5);
 
   }
 

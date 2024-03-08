@@ -37,15 +37,17 @@ public class RobotContainer {
 
   private void configureBindings(){
     // new JoystickButton(joystick, XboxController.Button.kX.value).onTrue(new PivotPidCmd(pivotSubs, pivotSubs.angleSubwooferShot()));
-    // new JoystickButton(joystick, XboxController.Button.kY.value).onTrue(new PivotPidCmd(pivotSubs, 0)); //runs to starting position
 
     // //TEST
     // new JoystickButton(joystick, XboxController.Button.kB.value).onTrue(new PivotPidCmd(pivotSubs, -4));
     // new JoystickButton(joystick, XboxController.Button.kA.value).onTrue(new PivotPidCmd(pivotSubs, -10));
 
-    new JoystickButton(joystick, 3).onTrue(new PivotPidCmd(pivotSubs, pivotSubs.angleSubwooferShot()));
-    new JoystickButton(joystick, 4).onTrue(new PivotPidCmd(pivotSubs, 0)); //runs to starting position
-    new JoystickButton(joystick, 6).onTrue(new PivotPidCmd(pivotSubs, 45));
+    //new JoystickButton(joystick, 3).onTrue(new PivotPidCmd(pivotSubs, pivotSubs.angleSubwooferShot()));
+    //new JoystickButton(joystick, 4).onTrue(new PivotPidCmd(pivotSubs, 0)); //runs to starting position
+    
+    new JoystickButton(joystick, 8).onTrue(new PivotPidCmd(pivotSubs, 60));
+    new JoystickButton(joystick, 10).onTrue(new PivotPidCmd(pivotSubs, 45));
+    new JoystickButton(joystick, 12).onTrue(new PivotPidCmd(pivotSubs, 30));
 
     //new JoystickButton(joystick, 5).whileTrue(new LimelightTurnAlignCmd(swerveSubs, () -> joystick.getRawAxis(1), () -> joystick.getRawAxis(2), () -> joystick.getRawAxis(3), false, 0));
 
