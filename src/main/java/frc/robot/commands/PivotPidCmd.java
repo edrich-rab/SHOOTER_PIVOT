@@ -13,6 +13,7 @@ public class PivotPidCmd extends Command {
  
   PivotSubsystem pivotSub;
   double setpoint; 
+  double offset = 5;
 
   public PivotPidCmd(PivotSubsystem pivotSubs, double setpoint){
     pivotSub = pivotSubs;
@@ -25,17 +26,19 @@ public class PivotPidCmd extends Command {
   public void initialize(){
     pivotSub.init();
     pivotSub.enablePid();
+    //pivotSub.disablePid();
   }
 
   @Override
   public void execute(){
-   SmartDashboard.putString("Pivot Pid running", getName());
-    pivotSub.changeSetpoint(setpoint);
+   //SmartDashboard.putString("Pivot Pid running", getName());
+    pivotSub.changeSetpoint(setpoint + offset);
+    //SmartDashboard.putNumber("setpoint", setpoint);
   }
 
   @Override
   public void end(boolean interrupted){
-    
+    pivotSub.stopMotor();
   }
 
   @Override
