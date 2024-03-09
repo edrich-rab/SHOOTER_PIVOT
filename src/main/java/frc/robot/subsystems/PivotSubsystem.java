@@ -65,7 +65,7 @@ public class PivotSubsystem extends SubsystemBase {
     manualSpeed = 0;
     maxPidSpeed = 0.2;
 
-    pid.enableContinuousInput(0, 260); 
+    pid.enableContinuousInput(0, 360); 
     pid.setTolerance(1.5);
 
   }
@@ -199,7 +199,7 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Bottom limit switch pressed?", bottomLimitSwitchPressed());
     SmartDashboard.putNumber("calculated angle", finalAngle);
     SmartDashboard.putNumber("distance from limelight", horizontalDist);
-    SmartDashboard.putBoolean("at setpoint?", pid.atSetpoint());
+    SmartDashboard.putBoolean("at setpoint?", atSetpoint());
     SmartDashboard.putNumber("pid setpoint", setpoint);
 
     SmartDashboard.putNumber("TY", LimelightHelpers.getTY("limelight"));
