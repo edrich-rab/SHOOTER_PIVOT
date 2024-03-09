@@ -49,7 +49,7 @@ public class RobotContainer {
     new JoystickButton(joystick, 10).onTrue(new PivotPidCmd(pivotSubs, 45));
     new JoystickButton(joystick, 12).onTrue(new PivotPidCmd(pivotSubs, 30));
 
-    new JoystickButton(joystick, 7).onTrue(new PivotPidCmd(pivotSubs, pivotSubs.returnCalcAngle()));
+    //new JoystickButton(joystick, 7).onTrue(new PivotPidCmd(pivotSubs, pivotSubs.returnCalcAngle()));
 
     //new JoystickButton(joystick, 5).whileTrue(new LimelightTurnAlignCmd(swerveSubs, () -> joystick.getRawAxis(1), () -> joystick.getRawAxis(2), () -> joystick.getRawAxis(3), false, 0));
 

@@ -38,7 +38,7 @@ public class PivotPidCmd extends Command {
 
   @Override
   public void end(boolean interrupted){
-    
+    pivotSub.stopMotor();
   }
 
   @Override
