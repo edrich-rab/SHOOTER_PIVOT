@@ -187,7 +187,7 @@ public class PivotSubsystem extends SubsystemBase {
       pidSpeed = maxPidSpeed;
     }
 
-    pivotMotor.set(pidSpeed);
+//    pivotMotor.set(pidSpeed);
 
     SmartDashboard.putBoolean("Pid On?", pidOn);
     SmartDashboard.putNumber("Speed", pidSpeed);
