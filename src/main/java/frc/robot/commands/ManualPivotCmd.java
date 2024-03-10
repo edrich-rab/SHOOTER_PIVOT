@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
@@ -30,8 +26,8 @@ public class ManualPivotCmd extends Command {
 
   @Override
   public void execute(){
-    if (Math.abs(moveSpeed.getAsDouble()) > Constants.PivotConstants.MAX_PIVOT_SPEED){
-      pivotSub.setManualSpeed(Math.copySign(Constants.PivotConstants.MAX_PIVOT_SPEED, moveSpeed.getAsDouble()));
+    if (Math.abs(moveSpeed.getAsDouble()) > Constants.PivotConstants.MAX_SPEED){
+      pivotSub.setManualSpeed(Math.copySign(Constants.PivotConstants.MAX_SPEED, moveSpeed.getAsDouble()));
     }
     else{
       pivotSub.setManualSpeed(moveSpeed.getAsDouble());
