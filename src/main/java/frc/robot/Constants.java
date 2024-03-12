@@ -14,10 +14,13 @@ public final class Constants {
     public static final int JOYSTICK_PORT = 0;
     public static final int PIVOT_BOTTOM_LIMIT = 5;
 
-    public static final double subWooferEnc = 20;
-    public static final double ampEnc = 40;
-    public static final double wingEnc = 55;
-    public static final double MAX_PIVOT_SPEED = 0.2;
+    public static final double PIVOT_KP = 0.03;
+    public static final double PIVOT_KI = 0;
+    public static final double PIVOT_KD = 0;
+
+    public static final double MAX_SPEED = 0.9;
+
+
 
   }
 

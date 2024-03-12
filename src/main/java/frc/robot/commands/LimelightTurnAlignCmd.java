@@ -34,7 +34,7 @@ public class LimelightTurnAlignCmd extends Command {
     this.pipeline = pipeline;
     ally = DriverStation.getAlliance();
 
-    anglePID = new PIDController(0.001, 0, 0);
+    anglePID = new PIDController(0.002, 0, 0);
 
     addRequirements(swerveSubs);
   }
@@ -67,7 +67,7 @@ public class LimelightTurnAlignCmd extends Command {
     zSpeed = modifyAxis(zSpeed); 
 
     
-    double rotationSpeed = anglePID.calculate(LimelightHelpers.getTX("limelight"), 0);
+    double rotationSpeed = anglePID.calculate(LimelightHelpers.getTX("limelight"), -4.18);
     states = SwerveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(
     ChassisSpeeds.fromFieldRelativeSpeeds(rotationSpeed, ySpeed, zSpeed, swerveSubs.getRotation2d())
     );
