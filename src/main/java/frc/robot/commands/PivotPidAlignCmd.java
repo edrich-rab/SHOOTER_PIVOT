@@ -23,10 +23,10 @@ public class PivotPidAlignCmd extends Command {
 
   @Override
   public void execute(){
-    if(pivotSubs.horizontalDist < 1.7){
+    if(pivotSubs.returnHorizontalDist() < 1.7){
       pivotSubs.changeSetpoint(45);
     }
-    else if(pivotSubs.horizontalDist > 1.7 && pivotSubs.horizontalDist < 2.3){
+    else if(pivotSubs.returnHorizontalDist() > 1.7 && pivotSubs.returnHorizontalDist() < 2.3){
       pivotSubs.changeSetpoint(30);
     }
     else{
