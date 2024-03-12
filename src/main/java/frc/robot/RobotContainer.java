@@ -8,6 +8,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.commands.LimelightTurnAlignCmd;
 import frc.robot.commands.ManualPivotCmd;
+import frc.robot.commands.PivotPidAlignCmd;
 import frc.robot.commands.PivotPidCmd;
 import frc.robot.commands.RunToTopLim;
 import frc.robot.subsystems.PivotSubsystem;
@@ -25,8 +26,6 @@ public class RobotContainer {
   private final PivotSubsystem pivotSubs = new PivotSubsystem();
   private final SwerveSubsystem swerveSubs = new SwerveSubsystem(); 
 
-  private final Command setPivotInit = new InstantCommand(() -> pivotSubs.changeSetpoint(pivotSubs.returnEncoder()));
-
   //private final XboxController joystick = new XboxController(PivotConstants.JOYSTICK_PORT);
   private final Joystick joystick = new Joystick(PivotConstants.JOYSTICK_PORT);
 
@@ -43,7 +42,7 @@ public class RobotContainer {
     new JoystickButton(joystick, 10).onTrue(new PivotPidCmd(pivotSubs, 45));
     new JoystickButton(joystick, 12).onTrue(new PivotPidCmd(pivotSubs, 30));
 
-    new JoystickButton(joystick, 7).onTrue(new PivotPidCmd(pivotSubs, pivotSubs.returnCalcAngle()));
+    new JoystickButton(joystick, 7).onTrue(new PivotPidAlignCmd(pivotSubs));
 
     new JoystickButton(joystick, 9).whileTrue(new LimelightTurnAlignCmd(swerveSubs, () -> joystick.getX(), () -> joystick.getY(), () -> joystick.getZ(), false, 0));
 

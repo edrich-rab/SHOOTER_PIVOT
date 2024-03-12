@@ -51,20 +51,19 @@ public class PivotSubsystem extends SubsystemBase {
     limitSwitch = new DigitalInput(PivotConstants.PIVOT_TOP_LIMIT);
     bottomLimitSwitch = new DigitalInput(PivotConstants.PIVOT_BOTTOM_LIMIT);
     encoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
-  
-    encoder.setZeroOffset(270);
+    
+    encoder.setZeroOffset(270 - 63);
     encoder.setPositionConversionFactor(360);
     
-    pid = new PIDController(PivotConstants.PIVOT_KP, PivotConstants.PIVOT_KI, PivotConstants.PIVOT_KD);
-    setpoint = 0; //PID setPoint
+    pid = new PIDController(0.03, 0, 0);
+    setpoint = 0;
     setpointTolerance = 1.5;
 
     manualSpeed = 0;
-    maxPidSpeed = PivotConstants.MAX_SPEED;
+    maxPidSpeed = 0.9;
 
     pid.enableContinuousInput(0, 360); 
     pid.setTolerance(1.5);
-
   }
 
  // sets pivotMotor to brake mode
@@ -161,11 +160,10 @@ public class PivotSubsystem extends SubsystemBase {
   public void periodic() {
     horizontalDist = Units.inchesToMeters(43) / (Math.tan(Units.degreesToRadians(LimelightHelpers.getTY("limelight") + 15)));
     statsCalcAngle = 84.3 + (-9.18 * horizontalDist) + (0.369 * Math.pow(horizontalDist, 2));
+    statsCalcAngle /= 2;
 
     finalAngle = Units.radiansToDegrees(Math.atan((Units.inchesToMeters(43) + Units.inchesToMeters(21))/horizontalDist));
-    statsAngleCalc = 86 + (-9.5 * horizontalDist) + (0.386 * Math.pow(horizontalDist, 2)); 
-    statsAngleCalc /= 2;
-  
+
     double pidSpeed = 0;
 
     if(pidOn){
@@ -188,17 +186,17 @@ public class PivotSubsystem extends SubsystemBase {
       pidSpeed = -maxPidSpeed;
     }
 
-    pivotMotor.set(pidSpeed);
+    //pivotMotor.set(pidSpeed);
 
     SmartDashboard.putBoolean("[P] Pid On?", pidOn);
     SmartDashboard.putNumber("[P] Speed", pidSpeed);
     SmartDashboard.putBoolean("[P] Top limit switch pressed?", topLimitSwitchPressed());
-    SmartDashboard.putNumber("[P] Encoder values", returnEncoder());
+    SmartDashboard.putNumber("[P] Degree of shooter", 360 - returnEncoder());
     SmartDashboard.putBoolean("[P] Bottom limit switch pressed?", bottomLimitSwitchPressed());
-    SmartDashboard.putNumber("[P] calculated angle", finalAngle);
     SmartDashboard.putNumber("[P] distance from limelight", horizontalDist);
     SmartDashboard.putBoolean("[P] at setpoint?", atSetpoint());
     SmartDashboard.putNumber("[P] pid setpoint", setpoint);
+    SmartDashboard.putNumber("stats angle calc idgaf", 360 - statsAngleCalc);
 
     SmartDashboard.putNumber("[P] stats calc angle", returnCalcAngle());
     SmartDashboard.putNumber("TX", LimelightHelpers.getTX("limelight"));
