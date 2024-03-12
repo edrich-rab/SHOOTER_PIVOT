@@ -19,12 +19,11 @@ public class PivotPidAlignCmd extends Command {
   public void initialize(){
     pivotSubs.init();
     pivotSubs.enablePid();
-    pivotSubs.changeSetpoint(pivotSubs.returnCalcAngle());
   }
 
   @Override
   public void execute(){
-
+   pivotSubs.changeSetpoint((int)(pivotSubs.returnCalcAngle()));
   }
 
   @Override

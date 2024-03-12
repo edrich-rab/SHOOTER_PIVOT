@@ -41,7 +41,7 @@ public class PivotSubsystem extends SubsystemBase {
   private double finalAngle;
 
   private double horizontalDist;
-  private double statsAngleCalc; 
+  //private double statsAngleCalc; 
 
   private double statsCalcAngle;
 
@@ -60,7 +60,8 @@ public class PivotSubsystem extends SubsystemBase {
     setpointTolerance = 1.5;
 
     manualSpeed = 0;
-    maxPidSpeed = 0.9;
+    maxPidSpeed = 0.3;
+    statsCalcAngle = 0;
 
     pid.enableContinuousInput(0, 360); 
     pid.setTolerance(1.5);
@@ -153,14 +154,14 @@ public class PivotSubsystem extends SubsystemBase {
   }
 
   public double returnCalcAngle (){
+    statsCalcAngle = 84.3 + (-9.18 * horizontalDist) + (0.369 * Math.pow(horizontalDist, 2));
+    statsCalcAngle /= 2;
     return statsCalcAngle;
   }
  
   @Override
   public void periodic() {
     horizontalDist = Units.inchesToMeters(43) / (Math.tan(Units.degreesToRadians(LimelightHelpers.getTY("limelight") + 15)));
-    statsCalcAngle = 84.3 + (-9.18 * horizontalDist) + (0.369 * Math.pow(horizontalDist, 2));
-    statsCalcAngle /= 2;
 
     finalAngle = Units.radiansToDegrees(Math.atan((Units.inchesToMeters(43) + Units.inchesToMeters(21))/horizontalDist));
 
@@ -186,7 +187,7 @@ public class PivotSubsystem extends SubsystemBase {
       pidSpeed = -maxPidSpeed;
     }
 
-    //pivotMotor.set(pidSpeed);
+    pivotMotor.set(pidSpeed);
 
     SmartDashboard.putBoolean("[P] Pid On?", pidOn);
     SmartDashboard.putNumber("[P] Speed", pidSpeed);
@@ -195,8 +196,7 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("[P] Bottom limit switch pressed?", bottomLimitSwitchPressed());
     SmartDashboard.putNumber("[P] distance from limelight", horizontalDist);
     SmartDashboard.putBoolean("[P] at setpoint?", atSetpoint());
-    SmartDashboard.putNumber("[P] pid setpoint", setpoint);
-    SmartDashboard.putNumber("stats angle calc idgaf", 360 - statsAngleCalc);
+    SmartDashboard.putNumber("[P] pid setpoint", 360 - setpoint);
 
     SmartDashboard.putNumber("[P] stats calc angle", returnCalcAngle());
     SmartDashboard.putNumber("TX", LimelightHelpers.getTX("limelight"));
