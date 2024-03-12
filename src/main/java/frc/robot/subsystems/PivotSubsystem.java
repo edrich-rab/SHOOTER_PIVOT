@@ -1,16 +1,10 @@
-// hardstop at the start position
-// subwoofer position, amp position, feed position?
-
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.LimelightHelpers;
+import frc.robot.Constants;
 import frc.robot.Constants.PivotConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-
 //import com.revrobotics.SparkPIDController;
 
 import com.revrobotics.AbsoluteEncoder;
@@ -21,7 +15,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.math.controller.PIDController;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
-import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 
 public class PivotSubsystem extends SubsystemBase {
@@ -38,10 +31,9 @@ public class PivotSubsystem extends SubsystemBase {
   private double manualSpeed;
   private double maxPidSpeed;
 
-  private double finalAngle;
+  //private double finalAngle;
 
-  private double horizontalDist;
-  //private double statsAngleCalc; 
+  public double horizontalDist;
 
   private double statsCalcAngle;
 
@@ -55,13 +47,14 @@ public class PivotSubsystem extends SubsystemBase {
     encoder.setZeroOffset(270 - 63);
     encoder.setPositionConversionFactor(360);
     
-    pid = new PIDController(0.03, 0, 0);
+    pid = new PIDController(Constants.PivotConstants.PIVOT_KP, Constants.PivotConstants.PIVOT_KI, Constants.PivotConstants.PIVOT_KD);
     setpoint = 0;
     setpointTolerance = 1.5;
 
     manualSpeed = 0;
-    maxPidSpeed = 0.3;
+    maxPidSpeed = Constants.PivotConstants.MAX_SPEED;
     statsCalcAngle = 0;
+    horizontalDist = 0;
 
     pid.enableContinuousInput(0, 360); 
     pid.setTolerance(1.5);
@@ -148,22 +141,24 @@ public class PivotSubsystem extends SubsystemBase {
   //  LIMELIGHT METHODS  //
   ////////////////////////
 
-  // returns the encoder count of the angle shooter should go to
-  public double angleSubwooferShot(){
-    return finalAngle;
-  }
+  // public double angleSubwooferShot(){
+  //   return finalAngle;
+  // }
 
   public double returnCalcAngle (){
     statsCalcAngle = 84.3 + (-9.18 * horizontalDist) + (0.369 * Math.pow(horizontalDist, 2));
     statsCalcAngle /= 2;
     return statsCalcAngle;
   }
+
+  public double returnHorizontalDist(){
+    horizontalDist = Units.inchesToMeters(43) / (Math.tan(Units.degreesToRadians(LimelightHelpers.getTY("limelight") + 15)));
+    return horizontalDist;
+  }
  
   @Override
   public void periodic() {
-    horizontalDist = Units.inchesToMeters(43) / (Math.tan(Units.degreesToRadians(LimelightHelpers.getTY("limelight") + 15)));
-
-    finalAngle = Units.radiansToDegrees(Math.atan((Units.inchesToMeters(43) + Units.inchesToMeters(21))/horizontalDist));
+    //finalAngle = Units.radiansToDegrees(Math.atan((Units.inchesToMeters(43) + Units.inchesToMeters(21))/horizontalDist));
 
     double pidSpeed = 0;
 
@@ -200,6 +195,5 @@ public class PivotSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("[P] stats calc angle", returnCalcAngle());
     SmartDashboard.putNumber("TX", LimelightHelpers.getTX("limelight"));
-
   }
 }

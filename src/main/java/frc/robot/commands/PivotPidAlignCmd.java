@@ -26,11 +26,11 @@ public class PivotPidAlignCmd extends Command {
     if(pivotSubs.returnHorizontalDist() < 1.7){
       pivotSubs.changeSetpoint(45);
     }
-    else if(pivotSubs.returnHorizontalDist() > 1.7 && pivotSubs.returnHorizontalDist() < 2.3){
-      pivotSubs.changeSetpoint(30);
+    else if(pivotSubs.returnHorizontalDist() > 1.7 && pivotSubs.returnHorizontalDist() < 2){
+      pivotSubs.changeSetpoint(40);
     }
     else{
-      pivotSubs.changeSetpoint((int)(pivotSubs.returnCalcAngle() + 1));
+      pivotSubs.changeSetpoint((int)(pivotSubs.returnCalcAngle()));
     }
   }
 
