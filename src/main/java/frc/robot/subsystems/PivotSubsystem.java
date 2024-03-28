@@ -46,7 +46,7 @@ public class PivotSubsystem extends SubsystemBase {
     encoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
     bottomLimitSwitch2 = new DigitalInput(PivotConstants.PIVOT_BOTTOM_LIMIT2);
     
-    encoder.setZeroOffset(270 - 63);
+    encoder.setZeroOffset(87 + 213);
     encoder.setPositionConversionFactor(360);
     
     pid = new PIDController(Constants.PivotConstants.PIVOT_KP, Constants.PivotConstants.PIVOT_KI, Constants.PivotConstants.PIVOT_KD);
@@ -181,6 +181,9 @@ public class PivotSubsystem extends SubsystemBase {
     else if(bottomLimitSwitchPressed() && pidSpeed > 0){
       pidSpeed = 0;
     }
+    else if(bottomLimitSwitch2Pressed() && pidSpeed > 0){
+      pidSpeed = 0;
+    }
     else if(pidSpeed > maxPidSpeed){
       pidSpeed = maxPidSpeed;
     }
@@ -198,7 +201,7 @@ public class PivotSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("[P] distance from limelight", horizontalDist);
     SmartDashboard.putBoolean("[P] at setpoint?", atSetpoint());
     SmartDashboard.putNumber("[P] pid setpoint", 360 - setpoint);
-    SmartDashboard.putBoolean("[P] Bottom limit switch 2 pressed?", bottomLimitSwitch2Pressed());`
+    SmartDashboard.putBoolean("[P] Bottom limit switch 2 pressed?", bottomLimitSwitch2Pressed());
 
     SmartDashboard.putNumber("[P] stats calc angle", returnCalcAngle());
     SmartDashboard.putNumber("TX", LimelightHelpers.getTX("limelight"));
