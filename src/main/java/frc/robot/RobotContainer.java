@@ -41,7 +41,7 @@ public class RobotContainer {
   private void configureBindings(){
 
     // new JoystickButton(joystick, 8).onTrue(new RunToTopLim(pivotSubs));
-    // new JoystickButton(joystick, 10).onTrue(new PivotPidCmd(pivotSubs, 45));
+    //new JoystickButton(joystick, 10).onTrue(new PivotPidCmd(pivotSubs, 45));
     // new JoystickButton(joystick, 12).onTrue(new PivotPidCmd(pivotSubs, 30));
 
     // new JoystickButton(joystick, 7).onTrue(new PivotPidAlignCmd(pivotSubs));
@@ -50,8 +50,10 @@ public class RobotContainer {
 
     new JoystickButton(joystick, XboxController.Button.kB.value).whileTrue(new InstantCommand(() -> LimelightHelpers.setLEDMode_ForceBlink("limelight")));
     new JoystickButton(joystick, XboxController.Button.kB.value).whileFalse(new InstantCommand(() -> LimelightHelpers.setLEDMode_ForceOff("limelight")));
-    
-    
+  
+     new JoystickButton(joystick, XboxController.Button.kA.value).onTrue(new PivotPidCmd(pivotSubs, 45));
+     new JoystickButton(joystick, XboxController.Button.kB.value).onTrue(new PivotPidCmd(pivotSubs, 35));
+    new JoystickButton(joystick, XboxController.Button.kY.value).onTrue(new RunToTopLim(pivotSubs));
   }
 
   public Command getAutonomousCommand() {

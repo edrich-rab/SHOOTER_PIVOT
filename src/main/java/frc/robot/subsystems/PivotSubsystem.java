@@ -46,7 +46,7 @@ public class PivotSubsystem extends SubsystemBase {
     encoder = pivotMotor.getAbsoluteEncoder(Type.kDutyCycle);
     bottomLimitSwitch2 = new DigitalInput(PivotConstants.PIVOT_BOTTOM_LIMIT2);
     
-    encoder.setZeroOffset(87 + 213);
+    encoder.setZeroOffset(332.5);
     encoder.setPositionConversionFactor(360);
     
     pid = new PIDController(Constants.PivotConstants.PIVOT_KP, Constants.PivotConstants.PIVOT_KI, Constants.PivotConstants.PIVOT_KD);
